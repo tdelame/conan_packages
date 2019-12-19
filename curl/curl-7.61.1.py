@@ -7,7 +7,7 @@ class Curl(ConanFile):
     description = "command line tool and library for transferring data with URLs"
     url = "https://openssl.org"
     version = "7.61.1"
-    name = "libcurl"
+    name = "curl"
     license = "MIT"
 
     settings = "os"
@@ -27,13 +27,13 @@ class Curl(ConanFile):
 
     def requirements(self):
         """Define runtime requirements."""
-        self.requires("openssl/1.1.1@tdelame/stable")
+        self.requires("OpenSSL/1.1.1d@tdelame/stable")
         self.requires("zlib/1.2.11@tdelame/stable")
 
     def build_requirements(self):
         """Define build-time requirements."""
-        self.build_requires("cmake/3.11.2@tdelame/stable")
-        self.build_requires("ninja/1.8.2@tdelame/stable")
+        self.build_requires("cmake/3.15.4@tdelame/stable")
+        self.build_requires("ninja/1.9.0@tdelame/stable")
 
     def source(self):
         """Retrieve source code."""
@@ -55,7 +55,7 @@ class Curl(ConanFile):
             "CMAKE_DEBUG_POSTFIX": "",
             "CMAKE_USE_LIBSSH2": False,
             "CMAKE_USE_OPENSSL": True,
-            "OPENSSL_ROOT_DIR": os.path.join(self.deps_cpp_info["openssl"].include_paths[0], "../")
+            "OPENSSL_ROOT_DIR": os.path.join(self.deps_cpp_info["OpenSSL"].include_paths[0], "../")
         }
 
         if self.settings.os == "Linux" and find_executable("lld") is not None:
@@ -83,7 +83,7 @@ class Curl(ConanFile):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
         cmake = self._configure_cmake()
         cmake.install()
-        
+
         self.copy("cacert.pem", keep_path=True)
         shutil.rmtree(os.path.join(self.package_folder, "share", "man"), ignore_errors=True)
         for binary in ["curl", "curl.exe"]:

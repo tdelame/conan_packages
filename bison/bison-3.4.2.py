@@ -11,6 +11,16 @@ class Bison(ConanFile):
 
     _source_subfolder = "source_subfolder"
 
+    def system_requirements(self):
+        # It's easier to have system libraries to build this recipe.
+        if tools.os_info.is_linux:
+            if tools.os_info.with_yum:
+                installer = tools.SystemPackageTool()
+                installer.install("m4")
+            else:
+                self.output.warn("Unknown Linux package manager. Make sure you have M4 installed on your machine.")
+
+
     def config_options(self):
         """Executed before the actual assignment of options. Use it to configure or constrain
         the available options in a package. You can read values of self.settings but you cannot
@@ -23,7 +33,7 @@ class Bison(ConanFile):
         url = "http://ftp.gnu.org/gnu/bison/bison-{}.tar.gz".format(self.version)
         tools.get(url)
         os.rename("bison-{}".format(self.version), self._source_subfolder)
-    
+
     def build(self):
         """Build the elements to package."""
         with tools.chdir(self._source_subfolder):
@@ -34,11 +44,11 @@ class Bison(ConanFile):
             # There is a bug in parallel build with version 3.4.X: use a monothreaded build.
             autotools.make(args=["-j1"])
             autotools.install(args=["-j1"])
-    
+
     def package(self):
         """Assemble the package."""
         self.copy(pattern="COPYING", dst="licenses", src=self._source_subfolder, ignore_case=True, keep_path=True)
-    
+
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
         self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))

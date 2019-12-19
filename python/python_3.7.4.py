@@ -1,13 +1,15 @@
 import os
-from conans import ConanFile, CMake, tools
+from conans import ConanFile, AutoToolsBuildEnvironment, tools
 
 class Python(ConanFile):
     description = "open-source, cross-platform family of tools designed to build, test and package software"
     license = "Python Software Foundation License"
     url = "https://python.org"
-    version = "3.7.4"
+    version = "3.7.5"
     settings = "os"
     name = "python"
+
+    _source_subfolder = "source_subfolder"
 
     def config_options(self):
         """Executed before the actual assignment of options. Use it to configure or constrain
@@ -18,27 +20,17 @@ class Python(ConanFile):
 
     def source(self):
         """Retrieve source code."""
-        folder_name = "cmake-{}".format(self.version)
-        targz_file_name = "{}.tar.gz".format(folder_name)
-        url = "https://github.com/Kitware/CMake/releases/download/v{}/{}".format(self.version, targz_file_name)
-
-        tools.download(url, targz_file_name)
-        tools.untargz(targz_file_name, self.name)
-        os.remove(targz_file_name)
+        url = "https://github.com/python/cpython/archive/v{}.tar.gz".format(self.version)
+        tools.get(url)
+        os.rename("cpython-{}".format(self.version))
 
     def build(self):
         """Build the elements to package."""
-        autotools = AutoToolsBuildEnvironment(self)
-        autotools.fpic = True
-        autotools.link_flags.append("-fuse-ld=lld")
-        autotools.configure(
-            configure_dir="cmake/cmake-3.15.4",
-            args=[
-                "--parallel={}".format(tools.cpu_count()),
-                "--no-system-libs",
-                "--prefix={}/to_copy".format(self.build_folder)])
-        autotools.make(args=["-j{}".format(tools.cpu_count())])
-        autotools.install(args=["-j{}".format(tools.cpu_count())])
+        with tools.chdir(self._source_subfolder):
+            autotools = AutoToolsBuildEnvironment(self)
+            autotools.fpic = True
+            autotools.link_flags.append("-fuse-ld=lld")
+
 
     def package(self):
         """Assemble the package."""
