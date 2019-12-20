@@ -171,6 +171,7 @@ def main():
     builder.make_and_upload("libunwind", "1.3.1")   # no deps
     builder.make_binary("GLU", "9.0.0")             # no deps
     builder.make_and_upload("zlib", "1.2.11")       # no deps
+    builder.make_and_upload("libjpeg", "9c")        # no deps
     # on some configurations with clang, the compilation of the following packages crashes. I do
     # not want to spend time on debugging to make the compilation works on any configurations, so
     # I switch to GCC instead.
@@ -178,7 +179,7 @@ def main():
         builder.make_and_upload("bison", "3.4.2")   # no deps
         builder.make_and_upload("OpenSSL", "1.1.1d")# zlib
         builder.make_and_upload("GLEW", "2.1.0")    # cmake, ninja, GLU
-        builder.make_and_upload("cpython", "3.7.5")     # no deps
+        builder.make_and_upload("cpython", "3.7.5") # no deps
 
     builder.make_and_upload("flex", "2.6.4")        # bison
     builder.make_and_upload("curl", "7.61.1")       # cmake, ninja, OpenSSL, zlib
