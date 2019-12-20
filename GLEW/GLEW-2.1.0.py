@@ -1,5 +1,4 @@
 from distutils.spawn import find_executable
-import shutil
 import os
 from conans import ConanFile, CMake, tools
 
@@ -27,7 +26,7 @@ class GLEW(ConanFile):
                 installer = tools.SystemPackageTool()
                 installer.install("libGLU-devel")
             else:
-                self.output.warn("Unknown Linux package manager. Make sure you have OpenGL/GLU devel installed on your machine.")    
+                self.output.warn("Unknown Linux package manager. Make sure you have OpenGL/GLU devel installed on your machine.")
 
     def config_options(self):
         """Executed before the actual assignment of options. Use it to configure or constrain
@@ -42,8 +41,8 @@ class GLEW(ConanFile):
 
     def build_requirements(self):
         """Define build-time requirements."""
-        self.build_requires("cmake/3.11.2@tdelame/stable")
-        self.build_requires("ninja/1.8.2@tdelame/stable")
+        self.build_requires("cmake/3.15.4@tdelame/stable")
+        self.build_requires("ninja/1.9.0@tdelame/stable")
 
     def source(self):
         """Retrieve source code."""
@@ -51,7 +50,7 @@ class GLEW(ConanFile):
             self.version)
         tools.get(url)
         os.rename("glew-{}".format(self.version), self._source_subfolder)
-        
+
     def _configure_cmake(self):
         definition_dict = {
             "BUILD_UTILS": False,
@@ -62,7 +61,7 @@ class GLEW(ConanFile):
         if self.settings.os == "Linux" and find_executable("lld") is not None:
             definition_dict["CMAKE_SHARER_LINKER_FLAGS"] = "-fuse-ld=lld"
             definition_dict["CMAKE_EXE_LINKER_FLAGS"] = "-fuse-ld=lld"
-        
+
         cmake = CMake(self, generator="Ninja")
         cmake.configure(
             source_folder="{}/build/cmake".format(self._source_subfolder),
@@ -73,12 +72,10 @@ class GLEW(ConanFile):
         """Build the elements to package."""
         cmake = self._configure_cmake()
         cmake.build()
+        cmake.install()
 
     def package(self):
         """Assemble the package."""
-        cmake = self._configure_cmake()
-        cmake.install()
-    
         self.copy("include/*", ".", "%s" % self._source_subfolder, keep_path=True)
         self.copy("%s/license*" % self._source_subfolder, dst="licenses",  ignore_case=True, keep_path=False)
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
