@@ -108,6 +108,14 @@ def extract_settings(argument_list=None):
         help="build type for the packages that will be created")
 
     parser.add_argument(
+        "--repo-url", type=str, default="https://api.bintray.com/conan/tdelame/conan_packages",
+        help="URL of the conan repository to use for fetching and uploading packages")
+
+    parser.add_argument(
+        "--repo-key", type=str,
+        help="API key to upload to the conan repository")
+
+    parser.add_argument(
         "--repo-name", type=str, default="conan_packages",
         help="Name of the conan repository used to upload packages to")
 
@@ -132,6 +140,19 @@ def extract_settings(argument_list=None):
 
     return settings
 
+def update_repo(settings):
+    if not settings.local:
+        log_path = os.path.join(settings.tempdir, "conan_remote.log")
+        if settings.repo_url:
+            execute_command(
+                "conan remote add {} {}".format(settings.repo_name, settings.repo_url),
+                log_path)
+
+        if settings.repo_key:
+            execute_command(
+                "conan user -p {} -r {} {}".format(settings.repo_key, settings.repo_name, settings.repo_user),
+                log_path)
+
 def main():
     logging.basicConfig(
         format="%(asctime)s.%(msecs)03d | %(levelname)-8s | %(message)s",
@@ -140,6 +161,7 @@ def main():
     logging.info("application started")
 
     settings = extract_settings()
+    update_repo(settings)
     if settings.no_sudo:
         os.environ["CONAN_SYSREQUIRES_SUDO"] = "False"
     builder = PackageBuilder(settings)

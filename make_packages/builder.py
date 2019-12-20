@@ -24,7 +24,10 @@ class PackageBuilder(object):
         command = "conan search {} -r {}".format(
             self.conan_package_name(name, version),
             self._settings.repo_name)
-        return execute_command(command, check_log_path)
+        if execute_command(command, check_log_path):
+            with open(check_log_path, "r") as infile:
+                return infile.read().find("There are no packages for reference") == -1
+        return False
 
     def _run_command(self, command, description):
         if self._settings.quiet:
@@ -68,7 +71,7 @@ class PackageBuilder(object):
         if not self._settings.local:
             self._run_command(
                 "conan upload {} --all -r={} {}".format(
-                    package_name, self._settings.conan_repo_name,
+                    package_name, self._settings.repo_name,
                     "--force" if self._settings.force else ""),
                 "uploading package {}/{}".format(name, version))
 
@@ -107,11 +110,11 @@ class PackageBuilder(object):
 
     def upload(self, name, version):
         if not self._settings.local and \
-            (self._settings.force or not self._exist_locally(name, version)):
+            (self._settings.force or not self._exist_remotely(name, version)):
             self._run_command(
                 "conan upload {} --all -r={} {}".format(
                     self.conan_package_name(name, version),
-                    self._settings.conan_repo_name,
+                    self._settings.repo_name,
                     "--force" if self._settings.force else ""),
                 "uploading all packages {}/{}".format(name, version))
 
