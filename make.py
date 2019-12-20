@@ -182,7 +182,8 @@ def main():
         builder.make_and_upload("cpython", "3.7.5") # no deps
 
     builder.make_and_upload("flex", "2.6.4")        # bison
-    builder.make_and_upload("curl", "7.61.1")       # cmake, ninja, OpenSSL, zlib
+    builder.make_and_upload("libpng", "1.6.37")     # cmake, ninja, zlib
+    builder.make_and_upload("curl", "7.61.1")       # cmake, ninja, zlib, OpenSLL
 
 if __name__ == "__main__":
     main()
