@@ -6,7 +6,7 @@ class Python(ConanFile):
     license = "Python Software Foundation License"
     url = "https://python.org"
     version = "3.7.5"
-    name = "python"
+    name = "cpython"
 
     settings = "os"
     options = {"shared": [True, False]}
@@ -39,8 +39,8 @@ class Python(ConanFile):
             autotools.fpic = True
             autotools.configure(
                 args=[
-                    # "--with-lto", "--enable-optimizations", # costly to build, ~10/20% perf gain at runtime
-                    "--with-ipv6",
+                    "--with-lto", #"--enable-optimizations", # costly to build, ~10/20% perf gain at runtime
+                    "--enable-ipv6", "--without-ensurepip",
                     "--enable-big-digits=30", # by default on 64bits platform, but I want to be sure
                     "--enable-shared" if self.options.shared else "--disable-shared"
                 ])
@@ -51,12 +51,29 @@ class Python(ConanFile):
         """Assemble the package."""
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder, ignore_case=True, keep_path=True)
 
+
+        with tools.chdir(os.path.join(self.package_folder, "bin")):
+            # patch binaries shebangs
+            python_shebang = "#!/usr/bin/env python3.7"
+            for name in ["2to3-3.7", "idle3.7", "pydoc3.7", "pyvenv-3.7"]:
+                with open(name, "r") as infile:
+                    lines = infile.readlines()
+
+                lines[0] = python_shebang
+
+                with open(name, "w") as outfile:
+                    outfile.writelines(lines)
+
+            # create an alias for 'python'
+            os.symlink("python3.7", "python")
+
     def package_info(self):
         """Edit package info."""
         self.cpp_info.includedirs = [ "include", "include/python3.7" ]
         self.cpp_info.libs.extend(["python3.7", "pthread", "dl", "util"])
+        # python binaries will find their dependencies
+        self.env_info.LD_LIBRARY_PATH.append(os.path.join(self.package_folder, "lib"))
+        # python binaries are in PATH
         self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))
+        # python binaries knows the installation directory
         self.env_info.PYTHONHOME = self.package_folder
-        # not sure about that:
-        # self.env_info.LD_LIBRARY_PATH.append(os.path.join(self.package_folder, "lib"))
-
