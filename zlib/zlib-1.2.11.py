@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 from conans import ConanFile, tools, AutoToolsBuildEnvironment
 
 class ZLib(ConanFile):
@@ -75,6 +76,10 @@ class ZLib(ConanFile):
             tools.save("LICENSE", license_contents)
 
         self.copy("LICENSE", src=self._source_subfolder, dst="licenses")
+
+        # purge unneeded directories
+        rmtree(os.path.join(self.package_folder, "lib", "pkgconfig"))
+        rmtree(os.path.join(self.package_folder, "share"))
 
     def package_info(self):
         self.cpp_info.libs.append("z")
