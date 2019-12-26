@@ -178,6 +178,7 @@ def main():
     with builder.use_gcc():
         builder.make_and_upload("bison", "3.4.2")        # no deps
         builder.make_and_upload("OpenSSL", "1.1.1d")     # zlib
+        builder.make_and_upload("icu", "65.1")           # cmake, ninja
         builder.make_and_upload("GLEW", "2.1.0")         # cmake, ninja, GLU
         builder.make_and_upload("cpython", "3.7.5")      # no deps
 
