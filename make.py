@@ -166,24 +166,24 @@ def main():
         os.environ["CONAN_SYSREQUIRES_SUDO"] = "False"
     builder = PackageBuilder(settings)
 
-    builder.make_and_upload("ninja", "1.9.0")       # no deps
-    builder.make_and_upload("cmake", "3.15.4")      # no deps
-    builder.make_and_upload("libunwind", "1.3.1")   # no deps
-    builder.make_binary("GLU", "9.0.0")             # no deps
-    builder.make_and_upload("zlib", "1.2.11")       # no deps
-    builder.make_and_upload("libjpeg", "9c")        # no deps
+    builder.make_and_upload("ninja", "1.9.0")            # no deps
+    builder.make_and_upload("cmake", "3.15.4")           # no deps
+    builder.make_and_upload("libunwind", "1.3.1")        # no deps
+    builder.make_binary("GLU", "9.0.0")                  # no deps
+    builder.make_and_upload("zlib", "1.2.11")            # no deps
+    builder.make_and_upload("libjpeg", "9c")             # no deps
     # on some configurations with clang, the compilation of the following packages crashes. I do
     # not want to spend time on debugging to make the compilation works on any configurations, so
     # I switch to GCC instead.
     with builder.use_gcc():
-        builder.make_and_upload("bison", "3.4.2")   # no deps
-        builder.make_and_upload("OpenSSL", "1.1.1d")# zlib
-        builder.make_and_upload("GLEW", "2.1.0")    # cmake, ninja, GLU
-        builder.make_and_upload("cpython", "3.7.5") # no deps
+        builder.make_and_upload("bison", "3.4.2")        # no deps
+        builder.make_and_upload("OpenSSL", "1.1.1d")     # zlib
+        builder.make_and_upload("GLEW", "2.1.0")         # cmake, ninja, GLU
+        builder.make_and_upload("cpython", "3.7.5")      # no deps
 
-    builder.make_and_upload("flex", "2.6.4")        # bison
-    builder.make_and_upload("libpng", "1.6.37")     # cmake, ninja, zlib
-    builder.make_and_upload("curl", "7.61.1")       # cmake, ninja, zlib, OpenSLL
-
+    builder.make_and_upload("flex", "2.6.4")             # bison
+    builder.make_and_upload("libpng", "1.6.37")          # cmake, ninja, zlib
+    builder.make_and_upload("curl", "7.61.1")            # cmake, ninja, zlib, OpenSLL
+    builder.make_and_upload("double-conversion", "3.1.5")# cmake, ninja
 if __name__ == "__main__":
     main()
