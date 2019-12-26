@@ -1,4 +1,5 @@
 import os
+from distutils.spawn import find_executable
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
 
 class Python(ConanFile):
@@ -35,7 +36,8 @@ class Python(ConanFile):
 
         with tools.chdir(self._source_subfolder):
             autotools = AutoToolsBuildEnvironment(self)
-            autotools.link_flags.append("-fuse-ld=lld")
+            if self.settings.os == "Linux" and find_executable("lld") is not None:
+                autotools.link_flags.append("-fuse-ld=lld")
             autotools.fpic = True
             autotools.configure(
                 args=[
