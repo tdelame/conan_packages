@@ -171,6 +171,7 @@ def main():
     builder.make_binary("GLU", "9.0.0")                  # no deps
     builder.make_and_upload("zlib", "1.2.11")            # no deps
     builder.make_and_upload("libjpeg", "9c")             # no deps
+    builder.make_and_upload("libuuid", "1.0.3")          # no deps
     builder.make_and_upload("libpng", "1.6.37")          # cmake, ninja, zlib
 
     # on some configurations with clang, the compilation of the following packages crashes. I do
