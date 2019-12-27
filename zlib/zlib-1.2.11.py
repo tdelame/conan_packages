@@ -83,3 +83,5 @@ class ZLib(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs.append("z")
+        if self.settings.os == "Linux" and self.options.shared:
+            self.env_info.LD_LIBRARY_PATH.append(os.path.join(self.package_folder, "lib"))
