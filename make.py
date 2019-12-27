@@ -141,14 +141,13 @@ def extract_settings(argument_list=None):
     return settings
 
 def update_repo(settings):
-    if not settings.local:
-        log_path = os.path.join(settings.tempdir, "conan_remote.log")
-        if settings.repo_url:
-            execute_command(
-                "conan remote add {} {}".format(settings.repo_name, settings.repo_url),
-                log_path)
+    log_path = os.path.join(settings.tempdir, "conan_remote.log")
+    if settings.repo_url:
+        execute_command(
+            "conan remote add {} {}".format(settings.repo_name, settings.repo_url),
+            log_path)
 
-        if settings.repo_key:
+    if not settings.local and settings.repo_key:
             execute_command(
                 "conan user -p {} -r {} {}".format(settings.repo_key, settings.repo_name, settings.repo_user),
                 log_path)
@@ -179,6 +178,7 @@ def main():
         builder.make_and_upload("bison", "3.4.2")        # no deps
         builder.make_and_upload("OpenSSL", "1.1.1d")     # zlib
         builder.make_and_upload("icu", "65.1")           # cmake, ninja
+        builder.make_and_upload("expat", "2.2.9")        # cmake, ninja
         builder.make_and_upload("GLEW", "2.1.0")         # cmake, ninja, GLU
         builder.make_and_upload("cpython", "3.7.5")      # no deps
 
