@@ -185,6 +185,7 @@ def main():
         builder.make_and_upload("OpenSSL", "1.1.1d")     # zlib
         builder.make_and_upload("icu", "65.1")           # cmake, ninja
         builder.make_and_upload("expat", "2.2.9")        # cmake, ninja
+        builder.make_and_upload("zstd", "1.4.4")         # cmake, ninja
         builder.make_and_upload("GLEW", "2.1.0")         # cmake, ninja, GLU
         builder.make_and_upload("freetype", "2.9.1")     # cmake, ninja, zlib, libpng
         builder.make_and_upload("fontconfig", "2.13.92") # expat, freetype, gperf
