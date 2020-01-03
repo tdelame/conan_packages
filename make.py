@@ -167,6 +167,7 @@ def main():
 
     builder.make_and_upload("ninja", "1.9.0")            # no deps
     builder.make_and_upload("cmake", "3.15.4")           # no deps
+    builder.make_and_upload("gperf", "3.1")              # no deps
     builder.make_and_upload("libunwind", "1.3.1")        # no deps
     builder.make_binary("GLU", "9.0.0")                  # no deps
     builder.make_and_upload("zlib", "1.2.11")            # no deps
