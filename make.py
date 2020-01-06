@@ -183,6 +183,7 @@ def main():
         builder.make_and_upload("cpython", "3.7.5")      # no deps
         builder.make_and_upload("libiconv", "1.16")      # no deps
         builder.make_and_upload("OpenSSL", "1.1.1d")     # zlib
+        builder.make_and_upload("libalsa", "1.2.1.2")    # cpython
         builder.make_and_upload("icu", "65.1")           # cmake, ninja
         builder.make_and_upload("expat", "2.2.9")        # cmake, ninja
         builder.make_and_upload("zstd", "1.4.4")         # cmake, ninja
