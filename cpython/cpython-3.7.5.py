@@ -71,8 +71,8 @@ class Python(ConanFile):
 
     def package_info(self):
         """Edit package info."""
-        self.cpp_info.includedirs = [ "include", "include/python3.7" ]
-        self.cpp_info.libs.extend(["python3.7", "pthread", "dl", "util"])
+        self.cpp_info.includedirs = ["include", "include/python3.7"]
+        self.cpp_info.libs.extend(["python3.7m", "pthread", "dl", "util"])
         # python binaries will find their dependencies
         self.env_info.LD_LIBRARY_PATH.append(os.path.join(self.package_folder, "lib"))
         # python binaries are in PATH
