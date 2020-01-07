@@ -1,5 +1,5 @@
 from distutils.spawn import find_executable
-from shutil import rmtree
+from shutil import rmtree, copyfile, copy
 import os
 from conans import ConanFile, CMake, tools
 
@@ -69,6 +69,38 @@ class FreeType(ConanFile):
             build_folder=self._build_subfolder)
         return cmake
 
+    def _make_freetype_config(self):
+        # taken from https://github.com/bincrafters/conan-freetype/blob/testing/2.10.0/conanfile.py
+        # CMake build is easier to configure for the freetype library, however freetype-config is
+        # not easily built from CMake.
+        freetype_config_in = os.path.join(self._source_subfolder, "builds", "unix", "freetype-config.in")
+        if not os.path.isdir(os.path.join(self.package_folder, "bin")):
+            os.makedirs(os.path.join(self.package_folder, "bin"))
+        freetype_config = os.path.join(self.package_folder, "bin", "freetype-config")
+        copy(freetype_config_in, freetype_config)
+        libs = "-lfreetype"
+        staticlibs = "-lm %s" % libs if self.settings.os == "Linux" else libs
+        tools.replace_in_file(freetype_config, r"%PKG_CONFIG%", r"/bin/false")  # never use pkg-config
+        tools.replace_in_file(freetype_config, r"%prefix%", r"$conan_prefix")
+        tools.replace_in_file(freetype_config, r"%exec_prefix%", r"$conan_exec_prefix")
+        tools.replace_in_file(freetype_config, r"%includedir%", r"$conan_includedir")
+        tools.replace_in_file(freetype_config, r"%libdir%", r"$conan_libdir")
+        tools.replace_in_file(freetype_config, r"%ft_version%", r"$conan_ftversion")
+        tools.replace_in_file(freetype_config, r"%LIBSSTATIC_CONFIG%", r"$conan_staticlibs")
+        tools.replace_in_file(freetype_config, r"-lfreetype", libs)
+        tools.replace_in_file(freetype_config, r"export LC_ALL", """export LC_ALL
+BINDIR=$(dirname $0)
+conan_prefix=$(dirname $BINDIR)
+conan_exec_prefix=${{conan_prefix}}/bin
+conan_includedir=${{conan_prefix}}/include
+conan_libdir=${{conan_prefix}}/lib
+conan_ftversion={version}
+conan_staticlibs="{staticlibs}"
+""".format(version="22.1.16", staticlibs=staticlibs))
+        # check libtool version number in doc/VERSION.TXT
+        if self.settings.os == "Linux":
+            os.chmod(freetype_config, os.stat(freetype_config).st_mode | 0o111)
+
     def build(self):
         """Build the elements to package."""
         cmake = self._configure_cmake()
@@ -80,11 +112,15 @@ class FreeType(ConanFile):
         cmake = self._configure_cmake()
         cmake.install()
 
-        # purge unneeded directories
-        rmtree(os.path.join(self.package_folder, "lib", "cmake"))
-        rmtree(os.path.join(self.package_folder, "lib", "pkgconfig"))
+        self._make_freetype_config()
+
+        # some configure scripts look for 'freetype' instead of 'freetype2'.
+        copyfile(
+            os.path.join(self.package_folder, "lib", "pkgconfig", "freetype2.pc"),
+            os.path.join(self.package_folder, "lib", "pkgconfig", "freetype.pc"))
 
     def package_info(self):
         """Edit package info."""
         self.cpp_info.libs == ["freetype"]
         self.cpp_info.includedirs = [os.path.join("include", "freetype2")]
+        self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))
