@@ -78,7 +78,6 @@ class ZLib(ConanFile):
         self.copy("LICENSE", src=self._source_subfolder, dst="licenses")
 
         # purge unneeded directories
-        rmtree(os.path.join(self.package_folder, "lib", "pkgconfig"))
         rmtree(os.path.join(self.package_folder, "share"))
 
     def package_info(self):
