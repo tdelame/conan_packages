@@ -1,9 +1,11 @@
 from distutils.spawn import find_executable
-from shutil import rmtree
+from shutil import rmtree, copyfile
 import os
-from conans import ConanFile, AutoToolsBuildEnvironment, tools
+from conans import python_requires, ConanFile, AutoToolsBuildEnvironment, tools
 
-class Fontconfig(ConanFile):
+pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
+
+class Fontconfig(pyreq.BaseConanFile):
     description = "library for configuring and customizing font access"
     url = "https://www.fontconfig.org"
     license = "MIT"
@@ -11,10 +13,6 @@ class Fontconfig(ConanFile):
     version = "2.13.92"
 
     settings = "os"
-    options = {"shared": [True, False]}
-    default_options = {"shared": True}
-
-    _source_subfolder = "source_subfolder"
 
     def config_options(self):
         """Executed before the actual assignment of options. Use it to configure or constrain
@@ -41,44 +39,19 @@ class Fontconfig(ConanFile):
 
     def build(self):
         """Build the elements to package."""
-        parallel = "-j{}".format(tools.cpu_count())
-        freetype_lib_path = self.deps_cpp_info["freetype"].lib_paths[0]
-        libpng_lib_path = self.deps_cpp_info["libpng"].lib_paths[0]
+        # replace libtool number with freetype version number
+        with tools.chdir(self._source_subfolder):
+            tools.replace_in_file("configure", "21.0.15", "2.8.1")
+
         arguments = [
             "--disable-dependency-tracking",
             "--disable-rpath",
             "--disable-docs",
-            "FREETYPE_CFLAGS=\"-I{}\"".format(self.deps_cpp_info["freetype"].include_paths[0]),
-            "FREETYPE_LIBS=\"-L{} -lfreetype\"".format(freetype_lib_path)
         ]
-
-        if self.options.shared:
-            arguments.extend(["--enable-shared=yes", "--enable-static=no"])
-        else:
-            arguments.extend(["--enable-static=yes", "--enable-shared=no"])
-
-        # I do not want to pollute the environment variables with a long LD_LIBRARY_PATH. So I did
-        # not set the library paths of libpng and freetype into LD_LIBRARY_PATH. Instead, we extend
-        # it here to build this recipe. Note: when I tried to combine the two following contexts
-        # into the same line, it did not work.
-        with tools.environment_append({"LD_LIBRARY_PATH": [freetype_lib_path, libpng_lib_path]}):
-            with tools.chdir(self._source_subfolder):
-                autotools = AutoToolsBuildEnvironment(self)
-                autotools.fpic = True
-                if find_executable("lld") is not None:
-                    autotools.link_flags.append("-fuse-ld=lld")
-                autotools.cxx_flags.append("-O3")
-                autotools.flags.append("-O3")
-                autotools.configure(args=arguments)
-                autotools.make(args=[parallel])
-                autotools.install(args=[parallel])
-
-    def package(self):
-        """Assemble the package."""
-        self.copy("COPYING", dst="licenses", src=self._source_subfolder)
-        os.remove(os.path.join(self.package_folder, "lib", "libfontconfig.la"))
+        self.build_autotools(arguments)
 
     def package_info(self):
         """Edit package info."""
         tools.collect_libs(self)
-        self.cpp_info.libs = ["fontconfig", "m", "pthread"]
+        self.cpp_info.libs = ["fontconfig"]
+        self.cpp_info.system_libs = ["m", "pthread"]
