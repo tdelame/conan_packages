@@ -117,7 +117,6 @@ def main():
             builder_requires = ", ".join(builder_requires)
         print('        manager.manage("{}", "{}"){}# {}'.format(name, version, " " * padding, builder_requires))
 
-
 if __name__ == "__main__":
     main()
 
