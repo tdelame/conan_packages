@@ -74,7 +74,6 @@ class LibPNG(ConanFile):
         cmake.install()
 
         # purge unneeded directories
-        rmtree(os.path.join(self.package_folder, "lib", "pkgconfig"))
         rmtree(os.path.join(self.package_folder, "lib", "libpng"))
         rmtree(os.path.join(self.package_folder, "share"))
 
