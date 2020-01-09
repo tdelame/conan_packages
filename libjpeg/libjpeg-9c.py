@@ -55,4 +55,4 @@ class LibJpeg(ConanFile):
 
     def package_info(self):
         """Edit package info."""
-        self.cpp_info.libs = ["libjpeg"]
+        self.cpp_info.libs = ["jpeg"]
