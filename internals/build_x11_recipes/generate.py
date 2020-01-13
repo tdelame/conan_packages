@@ -115,7 +115,7 @@ def main():
             builder_requires = "no deps"
         else:
             builder_requires = ", ".join(builder_requires)
-        print('        builder.make_and_upload("{}", "{}"){}# {}'.format(name, version, " " * padding, builder_requires))
+        print('        manager.manage("{}", "{}"){}# {}'.format(name, version, " " * padding, builder_requires))
 
 
 if __name__ == "__main__":
