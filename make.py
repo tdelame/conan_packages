@@ -88,8 +88,12 @@ def extract_settings(argument_list=None):
         description="Create or update conan packages")
 
     parser.add_argument(
-        "-f", "--force", action="store_true",
-        help="erase existing local/remote packages")
+        "--force-build", action="store_true",
+        help="erase existing local packages")
+
+    parser.add_argument(
+        "--force-upload", action="store_true",
+        help="erase existing remote packages")
 
     parser.add_argument(
         "-q", "--quiet", action="store_true",
@@ -165,37 +169,90 @@ def main():
         os.environ["CONAN_SYSREQUIRES_SUDO"] = "False"
     builder = PackageBuilder(settings)
 
-    builder.make_and_upload("ninja", "1.9.0")            # no deps
-    builder.make_and_upload("cmake", "3.15.4")           # no deps
-    builder.make_and_upload("pyreq", "1.0.0")            # no deps
-    builder.make_and_upload("gperf", "3.1")              # no deps
-    builder.make_and_upload("libunwind", "1.3.1")        # no deps
-    builder.make_binary("GLU", "9.0.0")                  # no deps
-    builder.make_and_upload("zlib", "1.2.11")            # no deps
-    builder.make_and_upload("libjpeg", "9c")             # no deps
-    builder.make_and_upload("libuuid", "1.0.3")          # no deps
-    builder.make_and_upload("libpng", "1.6.37")          # cmake, ninja, zlib
+    # the deps on the three following packages are ignored after for brevity
+    builder.make_and_upload("ninja", "1.9.0")                   # no deps
+    builder.make_and_upload("cmake", "3.15.4")                  # no deps
+    builder.make_and_upload("pyreq", "1.0.0")                   # no deps
 
-    # on some configurations with clang, the compilation of the following packages crashes. I do
-    # not want to spend time on debugging to make the compilation works on any configurations, so
-    # I switch to GCC instead.
-    with builder.use_gcc():
-        builder.make_and_upload("bison", "3.4.2")        # no deps
-        builder.make_and_upload("cpython", "3.7.5")      # no deps
-        builder.make_and_upload("libiconv", "1.16")      # no deps
-        builder.make_and_upload("OpenSSL", "1.1.1d")     # zlib
-        builder.make_and_upload("libalsa", "1.2.1.2")    # cpython
-        builder.make_and_upload("openal", "1.20.0")      # alsa-lib
-        builder.make_and_upload("icu", "65.1")           # cmake, ninja
-        builder.make_and_upload("expat", "2.2.9")        # cmake, ninja
-        builder.make_and_upload("zstd", "1.4.4")         # cmake, ninja
-        builder.make_and_upload("GLEW", "2.1.0")         # cmake, ninja, GLU
-        builder.make_and_upload("freetype", "2.9.1")     # cmake, ninja, zlib, libpng
-        builder.make_and_upload("fontconfig", "2.13.92") # expat, freetype, gperf
-
-    builder.make_and_upload("flex", "2.6.4")             # bison
-    builder.make_and_upload("double-conversion", "3.1.5")# cmake, ninja
-    builder.make_and_upload("curl", "7.61.1")            # cmake, ninja, zlib, OpenSLL
+    builder.make_binary("GLU", "9.0.0")                         # no deps
+    builder.make_and_upload("gperf", "3.1")                     # no deps
+    builder.make_and_upload("libunwind", "1.3.1")               # no deps
+    builder.make_and_upload("libffi", "3.2.1")                  # no deps
+    builder.make_and_upload("libjpeg", "9c")                    # no deps
+    builder.make_and_upload("libuuid", "1.0.3")                 # no deps
+    builder.make_and_upload("bison", "3.4.2")                   # no deps
+    builder.make_and_upload("libiconv", "1.16")                 # no deps
+    builder.make_and_upload("zlib", "1.2.11")                   # no deps
+    builder.make_and_upload("lzma", "5.2.4")                    # no deps    
+    builder.make_and_upload("bzip2", "1.0.8")                   # no deps
+    builder.make_and_upload("expat", "2.2.9")                   # no deps
+    builder.make_and_upload("icu", "65.1")                      # no deps
+    builder.make_and_upload("zstd", "1.4.4")                    # no deps
+    builder.make_and_upload("double-conversion", "3.1.5")       # no deps
+    builder.make_and_upload("flex", "2.6.4")                    # bison
+    builder.make_and_upload("OpenSSL", "1.1.1d")                # zlib
+    builder.make_and_upload("fontconfig", "2.13.92")            # expat, freetype, gperf
+    builder.make_and_upload("libxml2", "2.9.9")                 # icu, zlib, libiconv
+    builder.make_and_upload("gettext", "0.20.1")                # libiconv, libxml2
+    builder.make_and_upload("GLEW", "2.1.0")                    # GLU
+    builder.make_and_upload("libpng", "1.6.37")                 # zlib
+    builder.make_and_upload("freetype", "2.9.1")                # zlib, libpng
+    builder.make_and_upload("curl", "7.61.1")                   # zlib, OpenSLL
+    builder.make_and_upload("cpython", "3.7.5")                 # no deps
+    builder.make_and_upload("libalsa", "1.2.1.2")               # cpython
+    builder.make_and_upload("openal", "1.20.0")                 # alsa-lib
+    
+    # X11 libraries for Linux
+    if settings.linux:
+        builder.make_and_upload("util-macros", "1.19.2")        # no deps
+        builder.make_and_upload("xorgproto", "2019.1")          # no deps
+        builder.make_and_upload("glproto", "1.4.17")            # no deps
+        builder.make_and_upload("dri2proto", "2.8")             # no deps
+        builder.make_and_upload("dri3proto", "1.0")             # no deps
+        builder.make_and_upload("xtrans", "1.4.0")              # no deps
+        builder.make_and_upload("libpthread-stubs", "0.1")      # no deps
+        builder.make_and_upload("libpciaccess", "0.16")         # no deps
+        builder.make_and_upload("xproto", "7.0.31")             # no deps
+        builder.make_and_upload("libXdmcp", "1.1.3")            # xproto
+        builder.make_and_upload("libXau", "1.0.9")              # xorgproto
+        builder.make_and_upload("xcb-proto", "1.13")            # cpython
+        builder.make_and_upload("libxcb", "1.13.1")             # xcb-proto, util-macros, libXau, libpthread-stubs, libXdmcp
+        builder.make_and_upload("libX11", "1.6.8")              # xorgproto, xtrans, libxcb
+        builder.make_and_upload("libXext", "1.3.4")             # libX11
+        builder.make_and_upload("libFS", "1.0.8")               # xtrans, xorgproto, util-macros
+        builder.make_and_upload("libICE", "1.0.10")             # xtrans, xorgproto, util-macros
+        builder.make_and_upload("libSM", "1.2.3")               # libICE
+        builder.make_and_upload("libXScrnSaver", "1.2.3")       # libX11, libXext
+        builder.make_and_upload("libXt", "1.2.0")               # libSM, libX11
+        builder.make_and_upload("libXmu", "1.1.3")              # libXt, libXext
+        builder.make_and_upload("libXpm", "3.5.12")             # libX11, gettext
+        builder.make_and_upload("libXaw", "1.0.13")             # libXmu, libXpm
+        builder.make_and_upload("libXfixes", "5.0.3")           # libX11
+        builder.make_and_upload("libXcomposite", "0.4.5")       # libXfixes
+        builder.make_and_upload("libXrender", "0.9.10")         # libX11
+        builder.make_and_upload("libXcursor", "1.2.0")          # libXfixes, libXrender
+        builder.make_and_upload("libXdamage", "1.1.5")          # libXfixes
+        builder.make_and_upload("libfontenc", "1.1.4")          # xorgproto, util-macros, zlib
+        builder.make_and_upload("libXfont2", "2.0.3")           # libfontenc, xtrans, freetype
+        builder.make_and_upload("libXft", "2.3.3")              # libXrender, freetype, fontconfig
+        builder.make_and_upload("libXi", "1.7.10")              # libXext, libXfixes
+        builder.make_and_upload("libXinerama", "1.1.4")         # libXext, libXfixes
+        builder.make_and_upload("libXrandr", "1.5.2")           # libXrender, libXext
+        builder.make_and_upload("libXres", "1.2.0")             # libX11, libXext
+        builder.make_and_upload("libXtst", "1.2.3")             # libXi
+        builder.make_and_upload("libXv", "1.0.11")              # libX11, libXext
+        builder.make_and_upload("libXvMC", "1.0.11")            # libXv
+        builder.make_and_upload("libXxf86dga", "1.1.5")         # libX11, libXext
+        builder.make_and_upload("libXxf86vm", "1.1.4")          # libX11, libXext
+        builder.make_and_upload("libdmx", "1.1.4")              # libX11, libXext
+        builder.make_and_upload("libxkbfile", "1.1.0")          # libX11
+        builder.make_and_upload("libxshmfence", "1.3")          # xorgproto, util-macros
+        builder.make_and_upload("xcb-util", "0.4.0")            # libxcb
+        builder.make_and_upload("xcb-util-wm", "0.4.0")         # libxcb
+        builder.make_and_upload("xcb-util-image", "0.4.0")      # xcb-util
+        builder.make_and_upload("xcb-util-keysyms", "0.4.0")    # libxcb
+        builder.make_and_upload("xcb-util-renderutil", "0.3.9") # libxcb
+        builder.make_and_upload("xkeyboard-config", "2.28")     # xproto, libX11
 
 if __name__ == "__main__":
     main()

@@ -51,7 +51,7 @@ class PackageBuilder(object):
         return os.path.join(self._settings.root, name, "{}-{}.py".format(name, version))
 
     def make_binary(self, name, version):
-        if not self._settings.force and self._exist_locally(name, version):
+        if not self._settings.force_build and self._exist_locally(name, version):
             logging.info("creating binary package {}/{}: already exist locally".format(
                 name, version))
             return
@@ -65,18 +65,18 @@ class PackageBuilder(object):
             "conan export-pkg {} {} {} -s os=Linux".format(
                 self.conan_recipe_path(name, version),
                 package_name,
-                "--force" if self._settings.force else ""),
+                "--force" if self._settings.force_build else ""),
             "building binary package {}/{}".format(name, version))
 
         if not self._settings.local:
             self._run_command(
                 "conan upload {} --all -r={} {}".format(
                     package_name, self._settings.repo_name,
-                    "--force" if self._settings.force else ""),
+                    "--force" if self._settings.force_upload else ""),
                 "uploading package {}/{}".format(name, version))
 
     def make(self, name, version, settings=None, options=None):
-        if not self._settings.force and self._exist_locally(name, version):
+        if not self._settings.force_build and self._exist_locally(name, version):
             logging.info("creating package {}/{}: already exist locally".format(
                 name, version))
             return
@@ -110,12 +110,12 @@ class PackageBuilder(object):
 
     def upload(self, name, version):
         if not self._settings.local and \
-            (self._settings.force or not self._exist_remotely(name, version)):
+            (self._settings.force_build or self._settings.force_upload or not self._exist_remotely(name, version)):
             self._run_command(
                 "conan upload {} --all -r={} {}".format(
                     self.conan_package_name(name, version),
                     self._settings.repo_name,
-                    "--force" if self._settings.force else ""),
+                    "--force" if self._settings.force_build or self._settings.force_upload else ""),
                 "uploading all packages {}/{}".format(name, version))
 
     def make_and_upload(self, name, version, settings=None, options=None):
