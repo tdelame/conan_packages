@@ -9,76 +9,6 @@ import os
 from make_packages.utils import execute_command
 from make_packages.builder import PackageBuilder
 
-def _parse_compilers(tempdir):
-    default_compiler = None
-    default_compiler_version = None
-    default_cc_var = None
-    default_cxx_var = None
-    gcc_version = None
-
-    result_file = os.path.join(tempdir, "conan_profile.log")
-    command = "conan profile get settings.compiler default"
-    if execute_command(command, result_file):
-        with open(result_file, "r") as infile:
-            default_compiler = infile.read().strip()
-
-        command = "conan profile get settings.compiler.version default"
-        if execute_command(command, result_file):
-            with open(result_file, "r") as infile:
-                default_compiler_version = infile.read().strip()
-        else:
-            logging.error("cannot fetch default conan compiler version")
-            sys.exit(1)
-    else:
-        logging.error("cannot fetch default conan compiler")
-        sys.exit(1)
-
-    if default_compiler != "gcc":
-        command = "gcc --version"
-        if execute_command(command, result_file):
-            with open(result_file, "r") as infile:
-                gcc_version = infile.read().strip()
-
-            start_index = None
-            end_index = None
-            length = len(gcc_version)
-            for i in range(0, length):
-                if gcc_version[i].isdigit():
-                    start_index = i
-                    break
-
-            if start_index is not None:
-                for i in range(start_index, length):
-                    if gcc_version[i] == '\n':
-                        end_index = i
-                        break
-
-            if start_index is None or end_index is None:
-                logging.error("cannot parse gcc version for '{}'".format(gcc_version))
-                sys.exit(1)
-
-            gcc_version = gcc_version[start_index : end_index]
-            if gcc_version.count(".") > 1:
-                first = gcc_version.find(".")
-                second = gcc_version.find(".", first + 1)
-                gcc_version = gcc_version[:second]
-        else:
-            logging.error("cannot fetch gcc version, make sure it is installed and in PATH")
-            sys.exit(1)
-
-    command = "conan profile get env.CC default"
-    if execute_command(command, result_file):
-        with open(result_file, "r") as infile:
-            default_cc_var = infile.read().strip()
-
-    command = "conan profile get env.CXX default"
-    if execute_command(command, result_file):
-        with open(result_file, "r") as infile:
-            default_cxx_var = infile.read().strip()
-
-
-    return default_compiler, default_compiler_version, default_cc_var, default_cxx_var, gcc_version
-
 def extract_settings(argument_list=None):
     if argument_list is None:
         argument_list = sys.argv[1 :]
@@ -134,13 +64,8 @@ def extract_settings(argument_list=None):
     settings = parser.parse_args(argument_list)
     setattr(settings, "tempdir", tempfile.mkdtemp(prefix="make_conan_packages"))
     setattr(settings, "root", os.path.abspath(sys.path[0]))
-
-    default_compiler, default_compiler_version, default_cc_var, default_cxx_var, gcc_version = _parse_compilers(settings.tempdir)
-    setattr(settings, "default_compiler", default_compiler)
-    setattr(settings, "default_compiler_version", default_compiler_version)
-    setattr(settings, "default_cc_var", default_cc_var)
-    setattr(settings, "default_cxx_var", default_cxx_var)
-    setattr(settings, "gcc_version", gcc_version)
+    setattr(settings, "linux", os.name != "nt")
+    setattr(settings, "windows", not settings.linux)
 
     return settings
 
