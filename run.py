@@ -100,9 +100,9 @@ def main():
     manager = PackageManager(settings)
 
     # the deps on the three following packages are ignored after for brevity
+    manager.manage("pyreq", "1.0.0")                   # no deps
     manager.manage("ninja", "1.9.0")                   # no deps
     manager.manage("cmake", "3.15.4")                  # no deps
-    manager.manage("pyreq", "1.0.0")                   # no deps
 
     manager.manage("GLU", "9.0.0", binary=True)        # no deps
     manager.manage("gperf", "3.1")                     # no deps
@@ -128,7 +128,8 @@ def main():
     manager.manage("libpng", "1.6.37")                 # zlib
     manager.manage("freetype", "2.9.1")                # zlib, libpng
     manager.manage("curl", "7.61.1")                   # zlib, OpenSLL
-    manager.manage("cpython", "3.7.5")                 # no deps
+    manager.manage("cpython", "3.7.5")                 # OpenSSL, expat, lzma, libuuid, bzip2, libffi
+    manager.manage("meson", "0.53.0")                  # cpython
     manager.manage("libalsa", "1.2.1.2")               # cpython
     manager.manage("openal", "1.20.0")                 # alsa-lib
     
