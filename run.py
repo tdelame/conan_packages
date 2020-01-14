@@ -184,6 +184,7 @@ def main():
         manager.manage("xcb-util-keysyms", "0.4.0")    # libxcb
         manager.manage("xcb-util-renderutil", "0.3.9") # libxcb
         manager.manage("xkeyboard-config", "2.28")     # xproto, libX11
+        manager.manage("libxkbcommon", "0.9.1")        # meson, bison, xkeyboard-config, libxcb
 
     #manager.manage("qt", "5.14.0")                     # bison, flex, fontconfig, gperf, libalsa, libXext, libXi, libXrender, libX11, libxcb, libpng, libjpeg, zlib, openssl, cpython, double-conversion, freetype, expat, zstd, openal, icu
     manager.finish()
