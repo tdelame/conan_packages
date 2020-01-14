@@ -190,6 +190,7 @@ def main():
     manager.manage("pyside2", "5.14.0")                # cpython, qt
 
     manager.manage("wheel", "0.33.6")                  # cpython
+    manager.manage("pyinstaller", "3.6")        
     manager.finish()
 
 if __name__ == "__main__":
