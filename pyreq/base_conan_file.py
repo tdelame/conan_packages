@@ -41,6 +41,32 @@ class BaseConanFile(ConanFile):
             remove(os.path.join(self.package_folder, "share", "man"))
             remove(os.path.join(self.package_folder, "share", "gtk-doc"))
 
+    def managed_load_library_paths(self):
+        """Configure scripts or build scripts may rely on some libraries being available in the
+        current LD_LIBRARY_PATH while we cannot specify additional paths to those scripts. This
+        method returns a context that set LD_LIBRARY_PATH to contain all library paths of all 
+        dependences."""
+        ld_library_paths = []
+        for dependence in self.deps_cpp_info.deps:
+            ld_library_paths.extend(self.deps_cpp_info[dependence].lib_paths)
+        return tools.environment_append({"LD_LIBRARY_PATH": ld_library_paths})
+
+    def managed_pkg_config_paths(self, path):
+        """Configure scripts may rely on pkg-config files of dependence to correctly set compiler
+        and linker flags for us. We cannot always specify additional paths to those scripts. This
+        method returns a context that set PKG_CONFIG_PATH to a path where we copied all pkg-config
+        files of all dependences.
+        :param path: str, path to the directory to use to store pkg-config files."""
+        for dependence in self.deps_cpp_info.deps:
+            dependence_root_path = self.deps_cpp_info[dependence].rootpath
+            for directory, _, file_names in os.walk(dependence_root_path):
+                for file_name in file_names:
+                    if file_name.endswith(".pc"):
+                        destination_file_path = os.path.join(path, file_name)
+                        shutil.copyfile(os.path.join(directory, file_name), destination_file_path)
+                        tools.replace_prefix_in_pc_file(destination_file_path, dependence_root_path)
+        return tools.environment_append({"PKG_CONFIG_PATH": path})
+
     def build_meson(self, arguments=None, definitions=None, directory=None):
 
         if directory is None:
@@ -52,26 +78,15 @@ class BaseConanFile(ConanFile):
         if build_type is None:
             build_type = "Release"
 
-        with tools.chdir(abs_source_subfolder):
-            # configure script may rely on pkg-config files of dependence to correctly set compiler
-            # and linker flags for us. We copy every pkg-config files of dependences to the source
-            # folder and ask pkg-config to look into that folder for information.
-            for dependence in self.deps_cpp_info.deps:
-                dependence_root_path = self.deps_cpp_info[dependence].rootpath
-                for directory, _, file_names in os.walk(dependence_root_path):
-                    for file_name in file_names:
-                        if file_name.endswith(".pc"):
-                            shutil.copyfile(os.path.join(directory, file_name), file_name)
-                            tools.replace_prefix_in_pc_file(file_name, dependence_root_path)      
-
-
-            meson = Meson(self, backend="ninja", build_type=build_type)
-            meson.configure(
-                args=arguments, defs=definitions,
-                source_folder=abs_source_subfolder, build_folder=self._build_subfolder,
-                pkg_config_paths=abs_source_subfolder)
-            meson.build()
-            meson.install()
+        with self.managed_pkg_config_paths(abs_source_subfolder):
+            with tools.chdir(abs_source_subfolder):
+                meson = Meson(self, backend="ninja", build_type=build_type)
+                meson.configure(
+                    args=arguments, defs=definitions,
+                    source_folder=abs_source_subfolder, build_folder=self._build_subfolder,
+                    pkg_config_paths=abs_source_subfolder)
+                meson.build()
+                meson.install()
 
     def build_autotools(self, arguments=None, directory=None, parallel_make=True, parallel_install=True, include_paths=None):
         if not tools.os_info.is_linux:
@@ -90,39 +105,22 @@ class BaseConanFile(ConanFile):
             directory = self._source_subfolder
 
         abs_source_subfolder = os.path.abspath(directory)
+        with self.managed_load_library_paths():
+            with self.managed_pkg_config_paths(abs_source_subfolder):
+                with tools.chdir(abs_source_subfolder):
+                    autotools = AutoToolsBuildEnvironment(self)
+                    autotools.fpic = True
+                    autotools.cxx_flags.append("-O3")
+                    autotools.flags.append("-O3")
+                    if find_executable("lld") is not None:
+                        autotools.link_flags.append("-fuse-ld=lld")
 
-        with tools.chdir(abs_source_subfolder):
-            # configure script may run compiled programs to test if everything is working. Such
-            # programs may fail because the library loader does not find the dependence libraries.
-            # We help the loaded by putting any library path of dependences into LD_LIBRARY_PATH.
-            #
-            # configure script may rely on pkg-config files of dependence to correctly set compiler
-            # and linker flags for us. We copy every pkg-config files of dependences to the source
-            # folder and ask pkg-config to look into that folder for information.
-            ld_library_paths = []
-            for dependence in self.deps_cpp_info.deps:
-                ld_library_paths.extend(self.deps_cpp_info[dependence].lib_paths)
-                dependence_root_path = self.deps_cpp_info[dependence].rootpath
-                for directory, _, file_names in os.walk(dependence_root_path):
-                    for file_name in file_names:
-                        if file_name.endswith(".pc"):
-                            shutil.copyfile(os.path.join(directory, file_name), file_name)
-                            tools.replace_prefix_in_pc_file(file_name, dependence_root_path)
+                    if include_paths is not None:
+                        autotools.include_paths += include_paths
 
-            with tools.environment_append({"LD_LIBRARY_PATH": ld_library_paths, "PKG_CONFIG_PATH": abs_source_subfolder}):
-                autotools = AutoToolsBuildEnvironment(self)
-                autotools.fpic = True
-                autotools.cxx_flags.append("-O3")
-                autotools.flags.append("-O3")
-                if find_executable("lld") is not None:
-                    autotools.link_flags.append("-fuse-ld=lld")
-
-                if include_paths is not None:
-                    autotools.include_paths += include_paths
-
-                autotools.configure(args=arguments)
-                autotools.make(args=[parallel] if parallel_make else None)
-                autotools.install(args=[parallel] if parallel_install else None)
+                    autotools.configure(args=arguments)
+                    autotools.make(args=[parallel] if parallel_make else None)
+                    autotools.install(args=[parallel] if parallel_install else None)
 
     def package_licenses(self):
         """Include any license into the package."""
