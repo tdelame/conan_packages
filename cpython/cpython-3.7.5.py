@@ -46,7 +46,7 @@ class Python(pyreq.BaseConanFile):
             # manage dependences
             "--with-system-expat", "--with-openssl={}".format(self.deps_cpp_info["OpenSSL"].rootpath),
             # manage features
-            "--enable-ipv6", "--without-ensurepip",
+            "--enable-ipv6", "--with-ensurepip",
             "--enable-big-digits=30", # by default on 64bits platform, but I want to be sure
             # manage build
             "--enable-shared" if self.options.shared else "--disable-shared", "--without-pybdebug", "--without-assertions"
@@ -67,7 +67,7 @@ class Python(pyreq.BaseConanFile):
         with tools.chdir(os.path.join(self.package_folder, "bin")):
             # patch binaries shebangs
             python_shebang = "#!/usr/bin/env python3.7"
-            for name in ["2to3-3.7", "idle3.7", "pydoc3.7", "pyvenv-3.7"]:
+            for name in ["2to3-3.7", "idle3.7", "pydoc3.7", "pyvenv-3.7", "pip", "pip3.7"]:
                 with open(name, "r") as infile:
                     lines = infile.readlines()
 
