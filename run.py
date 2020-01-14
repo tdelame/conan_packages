@@ -188,6 +188,8 @@ def main():
 
     manager.manage("qt", "5.14.0")                     # bison, flex, fontconfig, gperf, libalsa, libXext, libXi, libXrender, libX11, libxcb, libxkbcommon, libpng, libjpeg, zlib, openssl, cpython, freetype, expat, zstd, openal, icu
     manager.manage("pyside2", "5.14.0")                # cpython, qt
+
+    manager.manage("wheel", "0.33.6")                  # cpython
     manager.finish()
 
 if __name__ == "__main__":
