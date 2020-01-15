@@ -112,6 +112,7 @@ def main():
     manager.manage("catch2", "2.11.1")
 
     manager.manage("GLU", "9.0.0", binary=True)        # no deps
+    manager.manage("TBB", "2019-U6")                   # no deps
     manager.manage("doxygen", "1.8.17")                # no deps
     manager.manage("gperf", "3.1")                     # no deps
     manager.manage("libunwind", "1.3.1")               # no deps
