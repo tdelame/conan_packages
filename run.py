@@ -131,13 +131,14 @@ def main():
     manager.manage("embree", "3.3.0")                  # TBB
     manager.manage("flex", "2.6.4")                    # bison
     manager.manage("OpenSSL", "1.1.1d")                # zlib
+    manager.manage("libpng", "1.6.37")                 # zlib
+    manager.manage("hdf5", "1.8.21")                   # zlib
+    manager.manage("freetype", "2.9.1")                # zlib, libpng
+    manager.manage("curl", "7.61.1")                   # zlib, OpenSSL
     manager.manage("fontconfig", "2.13.92")            # expat, freetype, gperf
     manager.manage("libxml2", "2.9.9")                 # icu, zlib, libiconv
     manager.manage("gettext", "0.20.1")                # libiconv, libxml2
     manager.manage("GLEW", "2.1.0")                    # GLU
-    manager.manage("libpng", "1.6.37")                 # zlib
-    manager.manage("freetype", "2.9.1")                # zlib, libpng
-    manager.manage("curl", "7.61.1")                   # zlib, OpenSLL
     manager.manage("cpython", "3.7.5")                 # OpenSSL, expat, lzma, libuuid, bzip2, libffi
     manager.manage("meson", "0.53.0")                  # cpython
     manager.manage("libalsa", "1.2.1.2")               # cpython

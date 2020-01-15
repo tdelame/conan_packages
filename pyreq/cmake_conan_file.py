@@ -19,6 +19,8 @@ class CMakeConanFile(BaseConanFile):
                 defs["CMAKE_BUILD_TYPE"] = "Release"
                 defs["CMAKE_CXX_FLAGS"] = "{} -m64 -fPIC -O3".format(defs.get("CMAKE_CXX_FLAGS", ""))
 
+            defs["CMAKE_POSITION_INDEPENDENT_CODE"] = True
+
     def cmake_definitions(self):
         """Return a definition dict to be used by configure_cmake()."""
         raise RuntimeError("You have to override 'cmake_definition()' in your derived class")

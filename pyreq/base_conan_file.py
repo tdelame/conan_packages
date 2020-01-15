@@ -40,6 +40,8 @@ class BaseConanFile(ConanFile):
             remove(os.path.join(self.package_folder, "share", "doc"))
             remove(os.path.join(self.package_folder, "share", "man"))
             remove(os.path.join(self.package_folder, "share", "gtk-doc"))
+            remove(os.path.join(self.package_folder, "share", "cmake"))
+            remove(os.path.join(self.package_folder, "lib", "cmake"))
 
     def managed_load_library_paths(self):
         """Configure scripts or build scripts may rely on some libraries being available in the
