@@ -104,6 +104,13 @@ def main():
     manager.manage("ninja", "1.9.0")                   # no deps
     manager.manage("cmake", "3.15.4")                  # no deps
 
+    # header-only libraries
+    manager.manage("fontstash", "1.0.1")
+    manager.manage("rapidjson", "1.1.0")
+    manager.manage("GSL", "2.1.0")
+    manager.manage("pybind11", "2.4.3")
+    manager.manage("catch2", "2.11.1")
+
     manager.manage("GLU", "9.0.0", binary=True)        # no deps
     manager.manage("gperf", "3.1")                     # no deps
     manager.manage("libunwind", "1.3.1")               # no deps
