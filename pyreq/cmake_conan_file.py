@@ -1,3 +1,4 @@
+from distutils.spawn import find_executable
 from base_conan_file import BaseConanFile
 from conans import CMake
 
@@ -7,6 +8,16 @@ class CMakeConanFile(BaseConanFile):
         """Define build-time requirements."""
         self.build_requires("cmake/3.15.4@tdelame/stable")
         self.build_requires("ninja/1.9.0@tdelame/stable")
+
+    def add_default_definitions(self, defs):
+        if self.settings.os == "Linux":
+            if find_executable( "lld" ) is not None:
+                defs[ "CMAKE_SHARED_LINKER_FLAGS" ] = "-fuse-ld=lld"
+                defs[ "CMAKE_EXE_LINKER_FLAGS"    ] = "-fuse-ld=lld"
+
+            if self.settings.get_safe("build_type") is None:
+                defs["CMAKE_BUILD_TYPE"] = "Release"
+                defs["CMAKE_CXX_FLAGS"] = "{} -m64 -fPIC -O3".format(defs.get("CMAKE_CXX_FLAGS", ""))
 
     def cmake_definitions(self):
         """Return a definition dict to be used by configure_cmake()."""

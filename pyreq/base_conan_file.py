@@ -124,6 +124,7 @@ class BaseConanFile(ConanFile):
 
     def package_licenses(self):
         """Include any license into the package."""
+        self.copy(pattern="LICENSE.txt", dst="licenses", src=self._source_subfolder)
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
         self.copy(pattern="COPYING", dst="licenses", src=self._source_subfolder)
 
