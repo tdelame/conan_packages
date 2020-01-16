@@ -66,8 +66,8 @@ class Python(pyreq.BaseConanFile):
 
         with tools.chdir(os.path.join(self.package_folder, "bin")):
             # patch binaries shebangs
-            python_shebang = "#!/usr/bin/env python3.7"
-            for name in ["2to3-3.7", "idle3.7", "pydoc3.7", "pyvenv-3.7", "pip", "pip3.7"]:
+            python_shebang = "#!/usr/bin/env python3.7\n"
+            for name in ["2to3-3.7", "idle3.7", "pydoc3.7", "pyvenv-3.7", "pip3", "pip3.7"]:
                 with open(name, "r") as infile:
                     lines = infile.readlines()
 
