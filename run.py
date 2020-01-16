@@ -129,6 +129,7 @@ def main():
     manager.manage("icu", "65.1")                      # no deps
     manager.manage("zstd", "1.4.4")                    # no deps
     manager.manage("double-conversion", "3.1.5")       # no deps
+    manager.manage("libsndfile", "1.0.29")             # no deps
     manager.manage("embree", "3.3.0")                  # TBB
     manager.manage("flex", "2.6.4")                    # bison
     manager.manage("OpenSSL", "1.1.1d")                # zlib
