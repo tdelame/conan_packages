@@ -110,6 +110,7 @@ def main():
     manager.manage("GSL", "2.1.0")
     manager.manage("pybind11", "2.4.3")
     manager.manage("catch2", "2.11.1")
+    manager.manage("boost-headers", "1.70.0")
 
     manager.manage("GLU", "9.0.0", binary=True)        # no deps
     manager.manage("IlmBase", "2.3.0")                 # no deps
