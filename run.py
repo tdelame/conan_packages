@@ -148,6 +148,7 @@ def main():
     manager.manage("gettext", "0.20.1")                # libiconv, libxml2
     manager.manage("GLEW", "2.1.0")                    # GLU
     manager.manage("cpython", "3.7.5")                 # OpenSSL, expat, lzma, libuuid, bzip2, libffi
+    manager.manage("tiff", "4.1.0")                    # zlib, zstd, lzma, libjpeg
     manager.manage("meson", "0.53.0")                  # cpython
     manager.manage("libalsa", "1.2.1.2")               # cpython
     manager.manage("PortAudio", "2018-12-24")          # libalsa
