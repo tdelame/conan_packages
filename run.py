@@ -131,6 +131,7 @@ def main():
     manager.manage("zstd", "1.4.4")                    # no deps
     manager.manage("double-conversion", "3.1.5")       # no deps
     manager.manage("libsndfile", "1.0.29")             # no deps
+    manager.manage("boost-chrono", "1.70.0")           # boost-headers
     manager.manage("embree", "3.3.0")                  # TBB
     manager.manage("flex", "2.6.4")                    # bison
     manager.manage("OpenSSL", "1.1.1d")                # zlib
