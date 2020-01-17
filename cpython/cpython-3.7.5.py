@@ -81,7 +81,7 @@ class Python(pyreq.BaseConanFile):
 
     def package_info(self):
         """Edit package info."""
-        self.cpp_info.includedirs = ["include", "include/python3.7"]
+        self.cpp_info.includedirs = ["include", "include/python3.7m"]
         self.cpp_info.libs.extend(["python3.7m", "pthread", "dl", "util"])
         # python binaries will find their dependencies (zlib and bzip2 are already in LD_LIBRARY_PATHS)
         self.env_info.LD_LIBRARY_PATH.append(os.path.join(self.package_folder, "lib"))
