@@ -16,18 +16,6 @@ class GLEW(ConanFile):
     _source_subfolder = "source_subfolder"
     _build_subfolder = "build_subfolder"
 
-    def system_requirements(self):
-        # It's easier to have system libraries to build this recipe.
-        if tools.os_info.is_linux:
-            if tools.os_info.with_apt:
-                installer = tools.SystemPackageTool()
-                installer.install("libglu1-mesa-dev")
-            elif tools.os_info.with_yum:
-                installer = tools.SystemPackageTool()
-                installer.install("libGLU-devel")
-            else:
-                self.output.warn("Unknown Linux package manager. Make sure you have OpenGL/GLU devel installed on your machine.")
-
     def config_options(self):
         """Executed before the actual assignment of options. Use it to configure or constrain
         the available options in a package. You can read values of self.settings but you cannot
@@ -37,7 +25,7 @@ class GLEW(ConanFile):
 
     def requirements(self):
         """Define runtime requirements."""
-        self.requires("GLU/9.0.0@tdelame/stable") #Used when this package is consumed by another one
+        self.requires("GLU/9.0.0@tdelame/stable")
 
     def build_requirements(self):
         """Define build-time requirements."""

@@ -12,14 +12,9 @@ class Bison(ConanFile):
     _source_subfolder = "source_subfolder"
 
     def system_requirements(self):
-        # It's easier to have system libraries to build this recipe.
-        if tools.os_info.is_linux:
-            if tools.os_info.with_yum:
-                installer = tools.SystemPackageTool()
-                installer.install("m4")
-            else:
-                self.output.warn("Unknown Linux package manager. Make sure you have M4 installed on your machine.")
-
+        # It's easier to have m4 installed on the system rather than having packages for it.
+        if tools.which("m4") is None:
+            raise RuntimeError("You need to install m4 on your system to build this recipe.")
 
     def config_options(self):
         """Executed before the actual assignment of options. Use it to configure or constrain
