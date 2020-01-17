@@ -43,12 +43,15 @@ class embree(pyreq.CMakeConanFile):
 
     def package(self):
         """Assemble the package."""
-        super(embree, self).package()
+        cmake = self.configure_cmake()
+        cmake.install()        
+        self.package_licenses()
+
         # make sure we get more than what's actually packaged by the cmake build system
-        self.copy("*.h", src="embree/include", dst="include", keep_path=True)
-        self.copy("*.isph", src="embree/include", dst="include", keep_path=True)
-        self.copy("*.h", src="embree/kernels", dst="kernels", keep_path=True)
-        self.copy("*.h", src="embree/common", dst="common" , keep_path=True)
+        self.copy("*.h", src="{}/include".format(self._source_subfolder), dst="include", keep_path=True)
+        self.copy("*.isph", src="{}/include".format(self._source_subfolder), dst="include", keep_path=True)
+        self.copy("*.h", src="{}/kernels".format(self._source_subfolder), dst="kernels", keep_path=True)
+        self.copy("*.h", src="{}/common".format(self._source_subfolder), dst="common" , keep_path=True)
 
         # remove unneeded directories/files
         with tools.chdir(self.package_folder):
