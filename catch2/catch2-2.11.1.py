@@ -20,7 +20,7 @@ class catch2(ConanFile):
         pyreq.make_directory("licenses")
         pyreq.copy(
             os.path.join(self.build_folder, "catch.hpp"),
-            os.path.join(self.package_folder, "include", "catch.hpp"))
+            os.path.join(self.package_folder, "include", "catch2", "catch.hpp"))
         pyreq.copy(
             os.path.join(self.build_folder, "LICENSE"),
             os.path.join(self.package_folder, "licenses", "LICENSE"))
