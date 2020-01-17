@@ -16,7 +16,7 @@ class alembic(pyreq.CMakeConanFile):
     def requirements(self):
         """Define runtime requirements."""
         self.requires("zlib/1.2.11@tdelame/stable")
-        self.requires("IlmBase/2.3.0@tdelame/stable")
+        self.requires("OpenEXR/2.4.0@tdelame/stable")
         self.requires("hdf5/1.8.21@tdelame/stable")
     
     def source(self):
@@ -27,7 +27,7 @@ class alembic(pyreq.CMakeConanFile):
 
     def cmake_definitions(self):
         """Setup CMake definitions."""
-        ilmbase_root_dir = self.deps_cpp_info["IlmBase"].rootpath
+        ilmbase_root_dir = self.deps_cpp_info["OpenEXR"].rootpath
         hdf5_root_dir = self.deps_cpp_info["hdf5"].rootpath
         zlib_root_dir = self.deps_cpp_info["zlib"].rootpath
 

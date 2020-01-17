@@ -145,7 +145,7 @@ def main():
     manager.manage("OpenEXR", "2.4.0")                 # zlib
     manager.manage("freetype", "2.9.1")                # zlib, libpng
     manager.manage("libcurl", "7.61.1")                # zlib, OpenSSL
-    manager.manage("alembic", "1.7.10")                # zlib, hdf5, IlmBase
+    manager.manage("alembic", "1.7.10")                # zlib, hdf5, OpenEXR
     manager.manage("fontconfig", "2.13.92")            # expat, freetype, gperf
     manager.manage("libxml2", "2.9.9")                 # icu, zlib, libiconv
     manager.manage("gettext", "0.20.1")                # libiconv, libxml2
