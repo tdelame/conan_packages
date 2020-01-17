@@ -13,9 +13,11 @@ class rapidjson(ConanFile):
     
     def source(self):
         """Retrieve source code."""
-        url = "{}/archive/v{}.tar.gz".format(self.url, self.version)
+        # the 1.1.0 release on github miss the files we used to include.
+        sha = "dfbe1db9da455552f7a9ad5d2aea17dd9d832ac1"
+        url = "{}/archive/{}.zip".format(self.url, sha)
         tools.get(url)
-        os.rename("{}-{}".format(self.name, self.version), self._source_subfolder)
+        os.rename("{}-{}".format(self.name, sha), self._source_subfolder)
 
     def package(self):
         """Assemble the package."""
