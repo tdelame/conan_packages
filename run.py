@@ -131,6 +131,7 @@ def main():
     manager.manage("zstd", "1.4.4")                    # no deps
     manager.manage("double-conversion", "3.1.5")       # no deps
     manager.manage("libsndfile", "1.0.29")             # no deps
+    manager.manage("boost-atomic", "1.70.0")           # boost-headers
     manager.manage("boost-filesystem", "1.70.0")       # boost-headers
     manager.manage("boost-date-time", "1.70.0")        # boost-headers
     manager.manage("boost-chrono", "1.70.0")           # boost-headers
