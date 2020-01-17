@@ -112,7 +112,7 @@ def main():
     manager.manage("catch2", "2.11.1")
     manager.manage("boost-headers", "1.70.0")
 
-    manager.manage("GLU", "9.0.0", binary=True)        # no deps
+    manager.manage("GLU", "9.0.0")                     # no deps
     manager.manage("IlmBase", "2.3.0")                 # no deps
     manager.manage("TBB", "2019-U6")                   # no deps
     manager.manage("doxygen", "1.8.17")                # no deps
