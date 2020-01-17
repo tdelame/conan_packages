@@ -7,7 +7,7 @@ class Curl(ConanFile):
     description = "command line tool and library for transferring data with URLs"
     url = "https://openssl.org"
     version = "7.61.1"
-    name = "curl"
+    name = "libcurl"
     license = "MIT"
 
     settings = "os"

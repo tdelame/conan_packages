@@ -142,9 +142,9 @@ def main():
     manager.manage("OpenSSL", "1.1.1d")                # zlib
     manager.manage("libpng", "1.6.37")                 # zlib
     manager.manage("hdf5", "1.8.21")                   # zlib
-    manager.manage("openEXR", "2.4.0")                 # zlib
+    manager.manage("OpenEXR", "2.4.0")                 # zlib
     manager.manage("freetype", "2.9.1")                # zlib, libpng
-    manager.manage("curl", "7.61.1")                   # zlib, OpenSSL
+    manager.manage("libcurl", "7.61.1")                # zlib, OpenSSL
     manager.manage("alembic", "1.7.10")                # zlib, hdf5, IlmBase
     manager.manage("fontconfig", "2.13.92")            # expat, freetype, gperf
     manager.manage("libxml2", "2.9.9")                 # icu, zlib, libiconv
@@ -153,7 +153,7 @@ def main():
     manager.manage("cpython", "3.7.5")                 # OpenSSL, expat, lzma, libuuid, bzip2, libffi
     manager.manage("OpenSubdiv", "3.4.0")              # zlib, TBB, GLEW    
     manager.manage("tiff", "4.1.0")                    # zlib, zstd, lzma, libjpeg
-    manager.manage("openimageio", "2.1.10.1")          # zlib, tiff, openEXR, libjpeg, libpng, boost-filesystem, boost-thread, TBB, bzip2, freetype
+    manager.manage("OpenImageIO", "2.1.10.1")          # zlib, tiff, OpenEXR, libjpeg, libpng, boost-filesystem, boost-thread, TBB, bzip2, freetype
     manager.manage("meson", "0.53.0")                  # cpython
     manager.manage("libalsa", "1.2.1.2")               # cpython
     manager.manage("PortAudio", "2018-12-24")          # libalsa

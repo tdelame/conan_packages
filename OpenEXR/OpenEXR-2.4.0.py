@@ -7,7 +7,7 @@ class openEXR(pyreq.CMakeConanFile):
     license = "BSD-3-Clause"
     url = "https://www.openexr.com/"
     version = "2.4.0"
-    name = "openEXR"
+    name = "OpenEXR"
 
     settings = "os"
 

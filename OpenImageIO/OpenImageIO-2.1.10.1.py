@@ -9,7 +9,7 @@ class openimageio(pyreq.CMakeConanFile):
     license = "BSD 3-Clause License"
     url = "https://sites.google.com/site/openimageio/"
 
-    name = "openimageio"
+    name = "OpenImageIO"
     version = "2.1.10.1"
 
     settings = "os"
@@ -21,7 +21,7 @@ class openimageio(pyreq.CMakeConanFile):
 
     def requirements(self):
         """Define runtime requirements."""
-        self.requires("openEXR/2.4.0@tdelame/stable")
+        self.requires("OpenEXR/2.4.0@tdelame/stable")
         self.requires("tiff/4.1.0@tdelame/stable")
         self.requires("libjpeg/9c@tdelame/stable")
         self.requires("libpng/1.6.37@tdelame/stable")
@@ -96,7 +96,7 @@ class openimageio(pyreq.CMakeConanFile):
             "BZip2_ROOT": self.deps_cpp_info["bzip2"].rootpath,
 
 
-            "OpenEXR_ROOT": self.deps_cpp_info["openEXR"].rootpath,
+            "OpenEXR_ROOT": self.deps_cpp_info["OpenEXR"].rootpath,
 
             "JPEG_ROOT": self.deps_cpp_info["libjpeg"].rootpath,
 
