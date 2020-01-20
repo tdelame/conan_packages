@@ -22,11 +22,9 @@ class PortAudio(pyreq.CMakeConanFile):
     def source(self):
         """Retrieve source code."""
         download_url = "https://app.assembla.com/spaces/portaudio/git/source/b7870b08f770c1e84b754e662c08b6942ff7d021?_format=zip"
-        zipped_folder_name = "root.zip"
-
-        tools.download(download_url, zipped_folder_name)
-        tools.unzip(zipped_folder_name, self._source_subfolder)
-        os.remove(zipped_folder_name)
+        pyreq.make_directory(self._source_subfolder)
+        with tools.chdir(self._source_subfolder):
+            tools.get(download_url, filename="root.zip")
 
     def cmake_definitions(self):
         """Setup CMake definitions."""
@@ -83,4 +81,4 @@ class PortAudio(pyreq.CMakeConanFile):
 
     def package_info(self):
         """Edit package info."""
-        self.cpp_info.libs = []
+        self.cpp_info.libs = ["portaudio"]
