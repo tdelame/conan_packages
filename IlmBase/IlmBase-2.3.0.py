@@ -48,7 +48,7 @@ class IlmBase(pyreq.BaseConanFile):
 
     def package_info(self):
         """Edit package info."""
-        self.cpp_info.libs = ["Imath, IexMath", "Half", "Iex", "IlmThread"]
+        self.cpp_info.libs = ["Imath", "IexMath", "Half", "Iex", "IlmThread"]
         if self.settings.os == "Linux":
             self.cpp_info.cppflags = ["-pthread"]
         elif self.options.shared:
