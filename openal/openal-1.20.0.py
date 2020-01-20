@@ -23,9 +23,10 @@ class OpenAL(ConanFile):
         self.build_requires("cmake/3.15.4@tdelame/stable")
         self.build_requires("ninja/1.9.0@tdelame/stable")
 
-    def requirements(self):
+        # as a build requirement because we do not want to have hard link on such library: the
+        # system one must be used instead.
         if self.settings.os == "Linux":
-            self.requires("libalsa/1.2.1.2@tdelame/stable")
+            self.build_requires("libalsa/1.2.1.2@tdelame/stable")
 
     def source(self):
         """Retrieve source code."""
