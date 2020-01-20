@@ -45,6 +45,12 @@ def execute_command(command, output_file_path):
         process.communicate()
         return process.returncode == 0
 
+XCB_SHM_PATCH_IN = """#if (XCB_SHM_MAJOR_VERSION == 1 && XCB_SHM_MINOR_VERSION >= 2) || XCB_SHM_MAJOR_VERSION > 1
+#define XCB_USE_SHM_FD
+#endif"""
+
+XCB_SHM_PATCH_OUT = """#undef XCB_USE_SHM_FD"""
+
 # TODO:
 # glib
 # webengine: nss, dbus
@@ -131,6 +137,16 @@ class qt(ConanFile):
                     print("failed to extract source archive:\n{}".format(infile.read()))
         os.remove(log_file_path)            
         os.rename(directory, self._source_subfolder)
+
+        if is_linux:
+            # if the host has some newer version of XCB available, Qt libraries will have undefined
+            # symbols, because they will be configured with the XCB versions of the host instead of
+            # the embeeded XCB versions.
+            with tools.chdir(os.path.join(self._source_subfolder, "qtbase", "src", "plugins", "platforms", "xcb")):
+                tools.replace_in_file(
+                    "qxcbbackingstore.cpp",
+                    XCB_SHM_PATCH_IN,
+                    XCB_SHM_PATCH_OUT)
 
     def build(self):
         args = [
@@ -241,7 +257,6 @@ class qt(ConanFile):
                         self.run("./configure -recheck-all {}".format(" ".join(args)))
                     finally:
                         pass
-
                     if self._compiler == "Visual Studio":
                         make = "jom"
                     elif tools.os_info.is_windows:
