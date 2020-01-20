@@ -36,3 +36,7 @@ class doxygen(ConanFile):
         pyreq.copy(
             os.path.join(self.build_folder, self._source_subfolder, "LICENSE"),
             os.path.join(self.package_folder, "licenses", "LICENSE"))
+
+    def package_info(self):
+        """Edit package info."""
+        self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))
