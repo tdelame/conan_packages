@@ -66,3 +66,5 @@ class pyside2(pyreq.BaseConanFile):
     def package_info(self):
         """Edit package info."""
         self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))
+        self.env_info.LD_LIBRARY_PATH.extend(self.deps_cpp_info["qt"].lib_paths)
+        self.env_info.PYTHONPATH.append(os.path.join(self.package_folder, "lib", "python3.7", "site-packages"))

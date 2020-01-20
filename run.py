@@ -145,7 +145,7 @@ def main():
     manager.manage("OpenEXR", "2.4.0")                 # zlib
     manager.manage("freetype", "2.9.1")                # zlib, libpng
     manager.manage("libcurl", "7.61.1")                # zlib, OpenSSL
-    manager.manage("alembic", "1.7.10")                # zlib, hdf5, OpenEXR
+    manager.manage("alembic", "1.7.10")                # zlib, hdf5, IlmBase
     manager.manage("fontconfig", "2.13.92")            # expat, freetype, gperf
     manager.manage("libxml2", "2.9.9")                 # icu, zlib, libiconv
     manager.manage("gettext", "0.20.1")                # libiconv, libxml2
@@ -215,8 +215,8 @@ def main():
     manager.manage("qt", "5.14.0")                     # bison, flex, fontconfig, gperf, libalsa, libXext, libXi, libXrender, libX11, libxcb, libxkbcommon, libpng, libjpeg, zlib, openssl, cpython, freetype, expat, zstd, openal, icu
     manager.manage("pyside2", "5.14.0")                # cpython, qt
 
-    manager.manage("wheel", "0.33.6")                  # cpython
-    manager.manage("pyinstaller", "3.6")        
+    manager.manage("pyinstaller", "3.6")
+    manager.manage("rumba-python", "1.0.0")        
     manager.finish()
 
 if __name__ == "__main__":
