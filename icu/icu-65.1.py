@@ -38,3 +38,6 @@ class ICU(pyreq.BaseConanFile):
     def package_info(self):
         """Edit package info."""
         self.cpp_info.libs = ["icui18n", "icuio", "icutest", "icutu", "icuuc", "icudata"]
+        # Make sure these libraries are always found and picked first (Qt modules cannot be loaded
+        # in python if those libraries are not found).
+        self.env_info.LD_LIBRARY_PATH.append(os.path.join(self.package_folder, "lib"))
