@@ -118,7 +118,7 @@ def main():
     manager.manage("TBB", "2019-U6")                   # no deps
     manager.manage("doxygen", "1.8.17")                # no deps
     manager.manage("gperf", "3.1")                     # no deps
-    manager.manage("libunwind", "1.3.1")               # no deps
+    manager.manage("libunwind", "1.3.1", options={"shared": False})# no deps
     manager.manage("libffi", "3.2.1")                  # no deps
     manager.manage("libjpeg", "9c")                    # no deps
     manager.manage("libuuid", "1.0.3")                 # no deps
