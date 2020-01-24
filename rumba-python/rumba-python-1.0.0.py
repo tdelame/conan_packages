@@ -14,5 +14,6 @@ class rumba_python(pyreq.PythonPackages):
         ("Sphinx", "2.3.1"),
         ("recommonmark", "0.6.0"),
         ("sphinx-rtd-theme", "0.4.3"),
-        ("sphinx-markdown-tables", "0.0.10")
+        ("sphinx-markdown-tables", "0.0.10"),
+        ("pytest", "5.3.4")
     ]
