@@ -1,8 +1,5 @@
 import os
-import shutil
-from glob import glob
-from distutils.spawn import find_executable
-from conans import tools, CMake, python_requires
+from conans import python_requires
 pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
 
 # adapted from https://github.com/conan-io/conan-center-index/blob/master/recipes/bzip2/1.0.8/CMakeLists.txt
@@ -57,8 +54,23 @@ install(EXPORT ${{BZ2_CONFIG}}
         NAMESPACE ${{BZ2_LIBRARY}}::)
 """
 
+PKG_CONFIG_CONTENT="""prefix={package_folder}
+exec_prefix=${{prefix}}
+libdir=${{prefix}}/lib
+includedir=${{prefix}}/include
 
-class bzip2(pyreq.BaseConanFile):
+Name: bzip2
+URL: http://www.bzip.org
+Description: free and open-source file compression program that uses the Burrows Wheeler algorithm
+Version: 1.0.8
+Requires:
+
+Libs: -L${{libdir}} -lbz2
+Libs.private: 
+Cflags: -I${{includedir}}
+"""
+
+class bzip2(pyreq.CMakeConanFile):
     description = "free and open-source file compression program that uses the Burrows Wheeler algorithm"
     url = "http://www.bzip.org"
     license = "bzip2-1.0.8"
@@ -76,36 +88,26 @@ class bzip2(pyreq.BaseConanFile):
 
     def source(self):
         """Retrieve source code."""
-        directory = "bzip2-{}".format(self.version)
-        url = "https://sourceware.org/pub/bzip2/{}.tar.gz".format(directory)
-        tools.get(url)
-        os.rename(directory, self._source_subfolder)
-
+        self.download("https://sourceware.org/pub/bzip2")
         with open("{}/CMakeLists.txt".format(self._source_subfolder), "w") as outfile:
             outfile.write(CMAKE_LIST_CONTENT.format(
                 SHARED_OR_STATIC="SHARED" if self.options.shared else "STATIC"))
 
-    def build_requirements(self):
-        """Define build-time requirements."""
-        self.build_requires("cmake/3.15.4@tdelame/stable")
-        self.build_requires("ninja/1.9.0@tdelame/stable")        
+    def cmake_definitions(self):
+        defs = {}
+        self.add_default_definitions(defs)
+        return defs
 
-    def build(self):
-        """Build the elements to package."""
-
-        definition_dict = {}
-
-        if self.settings.os == "Linux" and find_executable("lld") is not None:
-            definition_dict["CMAKE_SHARER_LINKER_FLAGS"] = "-fuse-ld=lld"
-            definition_dict["CMAKE_EXE_LINKER_FLAGS"] = "-fuse-ld=lld"
-
-        cmake = CMake(self, generator="Ninja")
-        cmake.configure(source_folder=self._source_subfolder, build_folder=self._build_subfolder)
-        cmake.build()
-        cmake.install()
+    def package(self):
+        """Assemble the package."""
+        super(bzip2, self).package()
+        pkgconfig_dir = os.path.join(self.package_folder, "lib", "pkgconfig")
+        pyreq.make_directory(pkgconfig_dir)
+        with pyreq.change_current_directory(pkgconfig_dir):
+            with open("bzip2.pc", "w") as outfile:
+                outfile.write(PKG_CONFIG_CONTENT.format(package_folder=self.package_folder))
 
     def package_info(self):
         """Edit package info."""
+        super(bzip2, self).package_info()
         self.cpp_info.libs = ["bz2"]
-        self.env_info.LD_LIBRARY_PATH.append(os.path.join(self.package_folder, "lib"))
-        self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))        

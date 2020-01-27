@@ -82,6 +82,7 @@ class OpenAL(ConanFile):
         rmtree(os.path.join(self.package_folder, "lib", "cmake"))
 
     def package_info(self):
+        super(OpenAL, self).package_info()
         if self.settings.os == "Windows":
             self.cpp_info.libs = ["OpenAL32", 'winmm']
 

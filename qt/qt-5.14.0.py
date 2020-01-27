@@ -2,8 +2,11 @@ import os
 import shutil
 import itertools
 import subprocess
-from conans import ConanFile, tools
+from conans import python_requires, tools
 from conans.tools import os_info
+
+pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
+
 
 is_linux = os_info.is_linux
 is_windows = os_info.is_windows
@@ -55,7 +58,7 @@ XCB_SHM_PATCH_OUT = """#undef XCB_USE_SHM_FD"""
 # glib
 # webengine: nss, dbus
 # qt multimedia: gstreamer, pulseaudio
-class qt(ConanFile):
+class qt(pyreq.BaseConanFile):
     description = "Cross-platform framework for graphical user interfaces"
     url = "https://www.qt.io"
     license = "LGPL-3.0"
@@ -283,6 +286,4 @@ class qt(ConanFile):
         """Assemble the package."""
         self.copy(pattern="LICENSE.LGPLv3", dst="licenses", src=self._source_subfolder)
 
-    def package_info(self):
-        """Edit package info."""
-        self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))        
+  

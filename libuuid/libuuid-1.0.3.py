@@ -1,9 +1,7 @@
-from distutils.spawn import find_executable
-from shutil import rmtree
-import os
-from conans import ConanFile, AutoToolsBuildEnvironment, tools
+from conans import python_requires
+pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
 
-class LibUUID(ConanFile):
+class LibUUID(pyreq.BaseConanFile):
     description = "Portable UUID C library"
     url = "https://sourceforge.net/projects/libuuid"
     license = "BSD"
@@ -11,10 +9,6 @@ class LibUUID(ConanFile):
     version = "1.0.3"
 
     settings = "os"
-    options = {"shared": [True, False]}
-    default_options = {"shared": True}
-
-    _source_subfolder = "source_subfolder"
 
     def config_options(self):
         """Executed before the actual assignment of options. Use it to configure or constrain
@@ -25,34 +19,13 @@ class LibUUID(ConanFile):
 
     def source(self):
         """Retrieve source code."""
-        directory = "libuuid-{}".format(self.version)
-        url = "https://downloads.sourceforge.net/project/libuuid/{}.tar.gz".format(directory)
-        tools.get(url)
-        os.rename(directory, self._source_subfolder)
+        self.download("https://downloads.sourceforge.net/project/libuuid")
 
     def build(self):
         """Build the elements to package."""
-        parallel = "-j{}".format(tools.cpu_count())
-        if self.options.shared:
-            arguments = ["--enable-shared=yes", "--enable-static=no"]
-        else:
-            arguments = ["--enable-static=yes", "--enable-shared=no"]
-
-        with tools.chdir(self._source_subfolder):
-            autotools = AutoToolsBuildEnvironment(self)
-            autotools.fpic = True
-            if find_executable("lld") is not None:
-                autotools.link_flags.append("-fuse-ld=lld")
-            autotools.configure(args=arguments)
-            autotools.make(args=[parallel])
-            autotools.install(args=[parallel])
-
-    def package(self):
-        """Assemble the package."""
-        self.copy("COPYING", dst="licenses", src=self._source_subfolder)
-        rmtree(os.path.join(self.package_folder, "lib", "pkgconfig"))
-        os.remove(os.path.join(self.package_folder, "lib", "libuuid.la"))
+        self.build_autotools()
 
     def package_info(self):
         """Edit package info."""
+        super(LibUUID, self).package_info()
         self.cpp_info.libs = ["uuid"]

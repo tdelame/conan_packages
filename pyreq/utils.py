@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 import shutil
 import os
 
@@ -32,3 +33,35 @@ def copy(source, destination):
         shutil.copytree(source, destination)
     else:
         shutil.copy(source, destination)
+
+@contextmanager
+def change_current_directory(directory_path):
+    old_current_directory = os.getcwd()
+    os.chdir(directory_path)
+    try:
+        yield
+    finally:
+        os.chdir(old_current_directory)
+
+def executable_in_directory(directory_path):
+    if not os.path.exists(directory_path) or not os.path.isdir(directory_path):
+        return False
+
+    with change_current_directory(directory_path):
+        for filename in [entry for entry in os.listdir(".") if os.path.isfile(entry)]:
+            if os.access(filename, os.X_OK):
+                return True
+    return False
+
+
+def library_in_directory(directory_path):
+    if not os.path.exists(directory_path) or not os.path.isdir(directory_path):
+        return False
+
+    with change_current_directory(directory_path):
+        patterns = [".so", ".a"] if os.name != "nt" else [".dll", ".lib"]
+        for filename in [entry for entry in os.listdir(".") if os.path.isfile(entry)]:
+            for pattern in patterns:
+                if filename.endswith(pattern):
+                    return True
+    return False

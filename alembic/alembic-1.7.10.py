@@ -10,7 +10,7 @@ class alembic(pyreq.CMakeConanFile):
 
     name = "alembic"
     version = "1.7.10"
-    
+
     settings = "os"
 
     def requirements(self):
@@ -18,7 +18,7 @@ class alembic(pyreq.CMakeConanFile):
         self.requires("zlib/1.2.11@tdelame/stable")
         self.requires("IlmBase/2.3.0@tdelame/stable")
         self.requires("hdf5/1.8.21@tdelame/stable")
-    
+
     def source(self):
         """Retrieve source code."""
         directory = "{}-{}".format( self.name, self.version)
@@ -50,5 +50,5 @@ class alembic(pyreq.CMakeConanFile):
 
     def package_info(self):
         """Edit package info."""
+        super(alembic, self).package_info()
         self.cpp_info.libs = ["Alembic"]
-        self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))

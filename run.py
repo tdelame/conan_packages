@@ -113,25 +113,32 @@ def main():
     manager.manage("boost-headers", "1.70.0")
     manager.manage("spdlog-rumba", "1.5.0")
 
-    manager.manage("GLU", "9.0.0")                     # no deps
-    manager.manage("IlmBase", "2.3.0")                 # no deps
-    manager.manage("TBB", "2019-U6")                   # no deps
-    manager.manage("doxygen", "1.8.17")                # no deps
-    manager.manage("gperf", "3.1")                     # no deps
-    manager.manage("libunwind", "1.3.1", options={"shared": False})# no deps
-    manager.manage("libffi", "3.2.1")                  # no deps
-    manager.manage("libjpeg", "9c")                    # no deps
-    manager.manage("libuuid", "1.0.3")                 # no deps
-    manager.manage("bison", "3.4.2")                   # no deps
-    manager.manage("libiconv", "1.16")                 # no deps
-    manager.manage("zlib", "1.2.11")                   # no deps
-    manager.manage("lzma", "5.2.4")                    # no deps    
-    manager.manage("bzip2", "1.0.8")                   # no deps
-    manager.manage("expat", "2.2.9")                   # no deps
-    manager.manage("icu", "65.1")                      # no deps
-    manager.manage("zstd", "1.4.4")                    # no deps
-    manager.manage("double-conversion", "3.1.5")       # no deps
-    manager.manage("libsndfile", "1.0.29")             # no deps
+    # libraries without any dependence
+    manager.manage("GLU", "9.0.0")
+    manager.manage("IlmBase", "2.3.0")
+    manager.manage("TBB", "2019-U6")
+    manager.manage("doxygen", "1.8.17")
+    manager.manage("gperf", "3.1")
+    manager.manage("libunwind", "1.3.1", options={"shared": False})
+    manager.manage("libunwind", "1.3.1", options={"shared": True})
+    manager.manage("libffi", "3.2.1")
+    manager.manage("libjpeg", "9c")
+    manager.manage("libuuid", "1.0.3")
+    manager.manage("bison", "3.4.2")
+    manager.manage("libiconv", "1.16")
+    manager.manage("zlib", "1.2.11")
+    manager.manage("lzma", "5.2.4")
+    manager.manage("bzip2", "1.0.8")
+    manager.manage("expat", "2.2.9")
+    manager.manage("icu", "65.1")
+    manager.manage("zstd", "1.4.4")
+    manager.manage("double-conversion", "3.1.5")
+    manager.manage("libsndfile", "1.0.29" if settings.windows else "1.0.28")
+    manager.manage("gdbm", "1.18.1")
+    manager.manage("sqlite3", "3.30.1")
+    manager.manage("ncurses", "6.1")
+    manager.manage("termcap", "1.3.1")
+
     manager.manage("boost-atomic", "1.70.0")           # boost-headers
     manager.manage("boost-filesystem", "1.70.0")       # boost-headers
     manager.manage("boost-date-time", "1.70.0")        # boost-headers
@@ -143,22 +150,23 @@ def main():
     manager.manage("libpng", "1.6.37")                 # zlib
     manager.manage("hdf5", "1.8.21")                   # zlib
     manager.manage("OpenEXR", "2.4.0")                 # zlib
-    manager.manage("freetype", "2.9.1")                # zlib, libpng
+    manager.manage("freetype", "2.9.1")                # zlib, libpng, bzip2
     manager.manage("libcurl", "7.61.1")                # zlib, OpenSSL
     manager.manage("alembic", "1.7.10")                # zlib, hdf5, IlmBase
     manager.manage("fontconfig", "2.13.92")            # expat, freetype, gperf
     manager.manage("libxml2", "2.9.9")                 # icu, zlib, libiconv
     manager.manage("gettext", "0.20.1")                # libiconv, libxml2
     manager.manage("GLEW", "2.1.0")                    # GLU
-    manager.manage("cpython", "3.7.5")                 # OpenSSL, expat, lzma, libuuid, bzip2, libffi
-    manager.manage("OpenSubdiv", "3.4.0")              # zlib, TBB, GLEW    
+    manager.manage("readline", "8.0")                  # termcap
+    manager.manage("cpython", "3.7.5")                 # OpenSSL, expat, lzma, libuuid, bzip2, libffi, gdbm, sqlite3, ncurses, readline
+    manager.manage("OpenSubdiv", "3.4.0")              # zlib, TBB, GLEW
     manager.manage("tiff", "4.1.0")                    # zlib, zstd, lzma, libjpeg
     manager.manage("OpenImageIO", "2.1.10.1")          # zlib, tiff, OpenEXR, libjpeg, libpng, boost-filesystem, boost-thread, TBB, bzip2, freetype
     manager.manage("meson", "0.53.0")                  # cpython
     manager.manage("libalsa", "1.2.1.2")               # cpython
     manager.manage("PortAudio", "2018-12-24")          # libalsa
     manager.manage("openal", "1.20.0")                 # libalsa
-    
+
     # X11 libraries for Linux
     if settings.linux:
         manager.manage("util-macros", "1.19.2")        # no deps
@@ -215,8 +223,8 @@ def main():
     manager.manage("qt", "5.14.0")                     # bison, flex, fontconfig, gperf, libalsa, libXext, libXi, libXrender, libX11, libxcb, libxkbcommon, libpng, libjpeg, zlib, openssl, cpython, freetype, expat, zstd, openal, icu
     manager.manage("pyside2", "5.14.0")                # cpython, qt
 
-    manager.manage("pyinstaller", "3.6")
-    manager.manage("rumba-python", "1.0.0")        
+    manager.manage("rumba-python-dev", "1.0")
+    manager.manage("rumba-python", "1.0.0")
     manager.finish()
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ import os
 from conans import ConanFile, python_requires, tools
 pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
 
-class doxygen(ConanFile):
+class doxygen(pyreq.BaseConanFile):
     description = "de facto standard tool for generating documentation from annotated C++ sources"
     url = "http://www.doxygen.nl/"
     license = "GPL-2.0-only"
@@ -11,7 +11,6 @@ class doxygen(ConanFile):
     version = "1.8.17"    
 
     settings = "os"
-    _source_subfolder = "source_subfolder"
 
     def config_options(self):
         """Executed before the actual assignment of options. Use it to configure or constrain
@@ -37,6 +36,3 @@ class doxygen(ConanFile):
             os.path.join(self.build_folder, self._source_subfolder, "LICENSE"),
             os.path.join(self.package_folder, "licenses", "LICENSE"))
 
-    def package_info(self):
-        """Edit package info."""
-        self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))

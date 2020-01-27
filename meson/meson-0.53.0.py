@@ -48,9 +48,5 @@ class meson(pyreq.BaseConanFile):
             pyreq.remove(os.path.join(base_path, element))
         super(meson, self).package()
 
-    def package_info(self):
-        """Edit package info."""
-        self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))
-        
     def package_id(self):
         self.info.header_only()

@@ -133,4 +133,5 @@ class openimageio(pyreq.CMakeConanFile):
    
     def package_info(self):
         """Edit package info."""
+        super(openimageio, self).package_info()
         self.cpp_info.libs = ["OpenImageIO", "OpenImageIO_Util"]

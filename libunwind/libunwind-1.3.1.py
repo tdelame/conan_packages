@@ -26,4 +26,5 @@ class Libunwind(pyreq.BaseConanFile):
         self.build_autotools()
 
     def package_info(self):
+        super(Libunwind, self).package_info()
         self.cpp_info.libs = ["unwind-coredump", "unwind-generic", "unwind-ptrace", "unwind-setjmp", "unwind-x86_64", "unwind"] 

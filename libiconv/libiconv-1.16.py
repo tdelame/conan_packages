@@ -1,9 +1,7 @@
-from distutils.spawn import find_executable
-from shutil import rmtree
-import os
-from conans import ConanFile, AutoToolsBuildEnvironment, tools
+from conans import python_requires
+pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
 
-class Libiconv(ConanFile):
+class Libiconv(pyreq.BaseConanFile):
     description = "Convert text to and from Unicode"
     url = "https://www.gnu.org/software/libiconv/"
     license = "LGPL-2.1"
@@ -11,10 +9,6 @@ class Libiconv(ConanFile):
     version = "1.16"
 
     settings = "os"
-    options = {"shared": [True, False]}
-    default_options = {"shared": True}
-
-    _source_subfolder = "source_subfolder"
 
     def config_options(self):
         """Executed before the actual assignment of options. Use it to configure or constrain
@@ -25,36 +19,12 @@ class Libiconv(ConanFile):
 
     def source(self):
         """Retrieve source code."""
-        directory = "libiconv-{}".format(self.version)
-        url = "https://ftp.gnu.org/gnu/libiconv/{}.tar.gz".format(directory)
-        tools.get(url)
-        os.rename(directory, self._source_subfolder)
+        self.download("https://ftp.gnu.org/gnu/libiconv/")
 
     def build(self):
         """Build the elements to package."""
-        parallel = "-j{}".format(tools.cpu_count())
-        if self.options.shared:
-            arguments = ["--enable-shared=yes", "--enable-static=no"]
-        else:
-            arguments = ["--enable-static=yes", "--enable-shared=no"]
-
-        with tools.chdir(self._source_subfolder):
-            autotools = AutoToolsBuildEnvironment(self)
-            autotools.fpic = True
-            if find_executable("lld") is not None:
-                autotools.link_flags.append("-fuse-ld=lld")
-            autotools.cxx_flags.append("-O3")
-            autotools.flags.append("-O3")
-            autotools.configure(args=arguments)
-            autotools.make(args=[parallel])
-            autotools.install(args=[parallel])
-
-    def package(self):
-        self.copy("COPYING.LIB", dst="licenses", src=self._source_subfolder)
-        rmtree(os.path.join(self.package_folder, "share"))
-        for la in ["libiconv.la", "libcharset.la"]:
-            os.remove(os.path.join(self.package_folder, "lib", la))
+        self.build_autotools()
 
     def package_info(self):
+        super(Libiconv, self).package_info()
         self.cpp_info.libs = ["iconv"]
-        self.env_info.path.append(os.path.join(self.package_folder, "bin"))

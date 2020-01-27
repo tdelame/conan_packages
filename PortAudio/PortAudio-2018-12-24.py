@@ -81,4 +81,5 @@ class PortAudio(pyreq.CMakeConanFile):
 
     def package_info(self):
         """Edit package info."""
+        super(PortAudio, self).package_info()
         self.cpp_info.libs = ["portaudio"]

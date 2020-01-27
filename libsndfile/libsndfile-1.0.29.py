@@ -12,6 +12,10 @@ class LibSndFile(pyreq.CMakeConanFile):
     
     settings = "os", "build_type"
     
+    def config_options(self):
+        if self.settings.os == "Linux":
+            raise RuntimeError("This recipe is known to cause trouble on Linux. Use libsndfile/1.0.28 instead")
+
     def source(self):
         """Retrieve source code."""
         sha = "1a87c443fe37bd67c8d1e2d2b4c8b0291806eb90"
@@ -57,6 +61,16 @@ class LibSndFile(pyreq.CMakeConanFile):
         self.add_default_definitions(definition_dict)
         return definition_dict
 
+    def package(self):
+        """Assemble the package."""
+        super(LibSndFile, self).package()
+        if self.settings.os == "Linux" and self.options.shared:
+            # libsndfile.so.1.0 might be requested by libalsa on host systems.
+            lib_directory = os.path.join(self.package_folder, "lib")
+            with tools.chdir(lib_directory):
+                os.symlink("libsndfile.so.1.0.29", "libsndfile.so.1.0")
+
     def package_info(self):
         """Edit package info."""
         self.cpp_info.libs = ["sndfile"]
+        self.env_info.LD_LIBRARY_PATH.append(os.path.join(self.package_folder, "lib"))

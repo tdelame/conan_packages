@@ -29,6 +29,7 @@ class Fontconfig(pyreq.BaseConanFile):
     def build_requirements(self):
         """Define build-time requirements."""
         self.build_requires("gperf/3.1@tdelame/stable")
+        self.requires("bzip2/1.0.8@tdelame/stable") #helps autotools to find bzip2
 
     def source(self):
         """Retrieve source code."""
@@ -48,10 +49,11 @@ class Fontconfig(pyreq.BaseConanFile):
             "--disable-rpath",
             "--disable-docs",
         ]
-        self.build_autotools(arguments)
+        # the autotools script does not like we do not have a pkg-config file for bzip2, so we trick it:
+        with tools.environment_append({"FREETYPE_CFLAGS": "-I.", "FREETYPE_LIBS": "-lfreetype -lpng -lbz2 -lz"}):
+            self.build_autotools(arguments)
 
     def package_info(self):
         """Edit package info."""
-        tools.collect_libs(self)
         self.cpp_info.libs = ["fontconfig"]
         self.cpp_info.system_libs = ["m", "pthread"]
