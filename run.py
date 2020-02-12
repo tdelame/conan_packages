@@ -150,6 +150,7 @@ def main():
     manager.manage("libpng", "1.6.37")                 # zlib
     manager.manage("hdf5", "1.8.21")                   # zlib
     manager.manage("OpenEXR", "2.4.0")                 # zlib
+    manager.manage("ptex", "2.3.2")                    # zlib
     manager.manage("freetype", "2.9.1")                # zlib, libpng, bzip2
     manager.manage("libcurl", "7.61.1")                # zlib, OpenSSL
     manager.manage("alembic", "1.7.10")                # zlib, hdf5, IlmBase
