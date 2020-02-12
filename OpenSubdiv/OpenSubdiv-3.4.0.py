@@ -71,4 +71,5 @@ class opensubdiv(pyreq.CMakeConanFile):
 
     def package_info(self):
         """Edit package info."""
+        super(opensubdiv, self).package_info()
         self.cpp_info.libs = ["osdCPU", "osdGPU"]

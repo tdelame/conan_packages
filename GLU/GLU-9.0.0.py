@@ -1,7 +1,7 @@
-from conans import ConanFile, tools
-import os
+from conans import python_requires
+pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
 
-class GLUConan(ConanFile):
+class GLU(pyreq.BaseConanFile):
     license = "SGI FREE SOFTWARE LICENSE B"
     description = " "
     version = "9.0.0"
@@ -23,5 +23,6 @@ class GLUConan(ConanFile):
         self.copy("*.so*", dst="lib")
 
     def package_info(self):
+        super(GLU, self).package_info()
         self.cpp_info.libs = ["GLU"]
         self.cpp_info.includedirs = ["include"]

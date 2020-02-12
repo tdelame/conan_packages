@@ -1,9 +1,10 @@
-from distutils.spawn import find_executable
-from shutil import rmtree, copyfile, copy
+from shutil import copyfile, copy
 import os
-from conans import ConanFile, CMake, tools
+from conans import python_requires, ConanFile, CMake, tools
 
-class FreeType(ConanFile):
+pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
+
+class FreeType(pyreq.CMakeConanFile):
     description = "freely available software library to render fonts"
     license = "FTL"
     url = "https://www.freetype.org"
@@ -11,63 +12,43 @@ class FreeType(ConanFile):
     name = "freetype"
 
     settings = "os"
-    options = {"shared": [True, False]}
-    default_options = {"shared": True}
-
-    _source_subfolder = "source_subfolder"
-    _build_subfolder = "build_subfolder"
-
-    def build_requirements(self):
-        """Define build-time requirements."""
-        self.build_requires("cmake/3.15.4@tdelame/stable")
-        self.build_requires("ninja/1.9.0@tdelame/stable")
 
     def requirements(self):
         """Define runtime requirements."""
         self.requires("libpng/1.6.37@tdelame/stable")
         self.requires("zlib/1.2.11@tdelame/stable")
+        self.requires("bzip2/1.0.8@tdelame/stable")
 
     def source(self):
         """Retrieve source code."""
-        directory_name = "freetype-{}".format(self.version)
-        url = "https://download.savannah.gnu.org/releases/freetype/{}.tar.gz".format(directory_name)
-        tools.get(url)
-        os.rename(directory_name, self._source_subfolder)
+        self.download("https://download.savannah.gnu.org/releases/freetype")
 
-    def _configure_cmake(self):
+    def cmake_definitions(self):
         definition_dict = {
             # help cmake to find our libpng
             "CMAKE_PREFIX_PATH": self.deps_cpp_info["libpng"].rootpath,
 
-            # do not know if it's still necessary, but it cost nothing
-            "CMAKE_BUILD_TYPE": "Release",
-
             # do not even try to find HarfBuzz or BZip2
             "CMAKE_DISABLE_FIND_PACKAGE_HarfBuzz": True,
-            "CMAKE_DISABLE_FIND_PACKAGE_BZip2": True,
 
             # help cmake to find our zlib
             "ZLIB_ROOT": self.deps_cpp_info["zlib"].rootpath,
+
+            # help cmake to find our bzip2
+            "BZIP2_INCLUDE_DIR": self.deps_cpp_info["bzip2"].include_paths[0],
+            "BZIP2_LIBRARIES": os.path.join(self.deps_cpp_info["bzip2"].lib_paths[0], "libbz2.so"),
 
             "BUILD_SHARED_LIBS": self.options.shared,
 
             # configure freetype options
             "FT_WITH_HARFBUZZ": False,
-            "FT_WITH_BZIP2": False,
+            "FT_WITH_BZIP2": True,
             "FT_WITH_ZLIB": True,
             "FT_WITH_PNG": True,
         }
 
-        if self.settings.os == "Linux" and find_executable("lld") is not None:
-            definition_dict["CMAKE_SHARER_LINKER_FLAGS"] = "-fuse-ld=lld"
-            definition_dict["CMAKE_EXE_LINKER_FLAGS"] = "-fuse-ld=lld"
-
-        cmake = CMake(self, generator="Ninja")
-        cmake.configure(
-            defs=definition_dict,
-            source_folder=self._source_subfolder,
-            build_folder=self._build_subfolder)
-        return cmake
+        self.add_default_definitions(definition_dict)
+        return definition_dict
 
     def _make_freetype_config(self):
         # taken from https://github.com/bincrafters/conan-freetype/blob/testing/2.10.0/conanfile.py
@@ -101,17 +82,10 @@ conan_staticlibs="{staticlibs}"
         if self.settings.os == "Linux":
             os.chmod(freetype_config, os.stat(freetype_config).st_mode | 0o111)
 
-    def build(self):
-        """Build the elements to package."""
-        cmake = self._configure_cmake()
-        cmake.build()
-
     def package(self):
         """Assemble the package."""
+        super(FreeType, self).package()
         self.copy("FTL.txt", src=os.path.join(self._source_subfolder, "docs"), dst="licenses", ignore_case=True, keep_path=False)
-        cmake = self._configure_cmake()
-        cmake.install()
-
         self._make_freetype_config()
 
         # some configure scripts look for 'freetype' instead of 'freetype2'.
@@ -121,6 +95,7 @@ conan_staticlibs="{staticlibs}"
 
     def package_info(self):
         """Edit package info."""
+        super(FreeType, self).package_info()
         self.cpp_info.libs == ["freetype"]
         self.cpp_info.includedirs = [os.path.join("include", "freetype2")]
-        self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))
+

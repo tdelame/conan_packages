@@ -79,6 +79,7 @@ class TBB(pyreq.CMakeConanFile):
 
     def package_info(self):
         """Edit the package info."""
+        super(TBB, self).package_info()
         self.cpp_info.libs = ["tbb", "tbbmalloc"]
 
         if self.settings.build_type == "Debug":

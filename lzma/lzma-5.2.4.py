@@ -1,6 +1,6 @@
 import os
-import shutil
-from glob import glob
+
+
 from conans import tools, python_requires
 pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
 
@@ -23,9 +23,7 @@ class LZMA(pyreq.BaseConanFile):
     def source(self):
         """Retrieve source code."""
         directory = "xz-{}".format(self.version)
-        url = "https://tukaani.org/xz/{}.tar.gz".format(directory)
-        tools.get(url)
-        os.rename(directory, self._source_subfolder)
+        self.download("https://tukaani.org/xz", directory=directory)
 
     def build(self):
         """Build the elements to package."""
@@ -36,6 +34,7 @@ class LZMA(pyreq.BaseConanFile):
 
     def package_info(self):
         """Edit package info."""
+        super(LZMA, self).package_info()
         if not self.options.shared:
             self.cpp_info.defines.append('LZMA_API_STATIC')
         self.cpp_info.libs = ["lzma"]

@@ -1,4 +1,4 @@
-from conans import ConanFile, python_requires, tools
+from conans import python_requires
 
 pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
 
@@ -58,4 +58,5 @@ class hdf5(pyreq.CMakeConanFile):
 
     def package_info(self):
         """Edit package info."""
+        super(hdf5, self).package_info()
         self.cpp_info.libs = ["hdf5", "hdf5_cpp", "hdf5_hl", "hdf5_hl_cpp"]

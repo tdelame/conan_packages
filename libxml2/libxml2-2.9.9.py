@@ -30,6 +30,7 @@ class libxml2(pyreq.BaseConanFile):
         self.build_autotools(arguments)
 
     def package_info(self):
+        super(libxml2, self).package_info()
         self.cpp_info.libs = ["xml2"]
         self.cpp_info.system_libs = ["m"]
         if not self.options.shared:

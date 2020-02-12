@@ -1,7 +1,8 @@
 import shutil
 import stat
 import os
-from conans import ConanFile, AutoToolsBuildEnvironment, tools
+from conans import ConanFile, AutoToolsBuildEnvironment, tools, python_requires
+pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
 
 def __on_shutil_rmtree_error(func, path, exc_info):
     #pylint: disable=unused-argument
@@ -14,18 +15,13 @@ def remove_directory(directory_path):
     """
     shutil.rmtree(directory_path, onerror=__on_shutil_rmtree_error)
 
-class OpenSSL(ConanFile):
+class OpenSSL(pyreq.BaseConanFile):
     description = "robust, commercial-grade, and full-featured toolkit for the TLS and SSL protocols"
     license = "Apache 2.0"
     url = "https://openssl.org"
     version = "1.1.1d"
     settings = "os"
     name = "OpenSSL"
-
-    options = {"shared": [True, False]}
-    default_options = {"shared": True}
-
-    _source_subfolder = "source_subfolder"
 
     def config_options(self):
         """Executed before the actual assignment of options. Use it to configure or constrain
@@ -131,6 +127,7 @@ class OpenSSL(ConanFile):
 
     def package_info(self):
         """Edit package info."""
+        super(OpenSSL, self).package_info()
         self.cpp_info.name = "OpenSSL"
         self.cpp_info.libs = ["ssl", "crypto"]
         if self.settings.os == "Windows":

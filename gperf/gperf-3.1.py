@@ -1,9 +1,7 @@
-from distutils.spawn import find_executable
-from shutil import rmtree
-import os
-from conans import ConanFile, AutoToolsBuildEnvironment, tools
+from conans import python_requires
+pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
 
-class Gperf(ConanFile):
+class Gperf(pyreq.BaseConanFile):
     description = "perfect hash function generator"
     url = "https://www.gnu.org/software/gperf"
     license = "GPL-3.0"
@@ -23,28 +21,8 @@ class Gperf(ConanFile):
 
     def source(self):
         """Retrieve source code."""
-        directory = "gperf-{}".format(self.version)
-        url = "https://ftp.gnu.org/pub/gnu/gperf/{}.tar.gz".format(directory)
-        tools.get(url)
-        os.rename(directory, self._source_subfolder)
+        self.download("https://ftp.gnu.org/pub/gnu/gperf")
 
     def build(self):
         """Build the elements to package."""
-        parallel = "-j{}".format(tools.cpu_count())
-        with tools.chdir(self._source_subfolder):
-            autotools = AutoToolsBuildEnvironment(self)
-            autotools.fpic = True
-            if find_executable("lld") is not None:
-                autotools.link_flags.append("-fuse-ld=lld")
-            autotools.configure()
-            autotools.make(args=[parallel])
-            autotools.install(args=[parallel])
-
-    def package(self):
-        """Assemble the package."""
-        self.copy("COPYING", dst="licenses", src=self._source_subfolder)
-        rmtree(os.path.join(self.package_folder, "share"))
-
-    def package_info(self):
-        """Edit package info."""
-        self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))
+        self.build_autotools()

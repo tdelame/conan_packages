@@ -29,6 +29,10 @@ class Python(pyreq.BaseConanFile):
         self.requires("bzip2/1.0.8@tdelame/stable")
         self.requires("libffi/3.2.1@tdelame/stable")
         self.requires("zlib/1.2.11@tdelame/stable")
+        self.requires("gdbm/1.18.1@tdelame/stable")
+        self.requires("sqlite3/3.30.1@tdelame/stable")
+        self.requires("ncurses/6.1@tdelame/stable")
+        self.requires("readline/8.0@tdelame/stable")
 
     def source(self):
         """Retrieve source code."""
@@ -42,7 +46,7 @@ class Python(pyreq.BaseConanFile):
         """Build the elements to package."""
         arguments = [
             # optimizations: costly to build, but ~10/20% perf gain at runtime
-            "--with-lto", "--enable-optimizations", 
+            "--with-lto", "--enable-optimizations",
             # manage dependences
             "--with-system-expat", "--with-openssl={}".format(self.deps_cpp_info["OpenSSL"].rootpath),
             # manage features
@@ -81,16 +85,19 @@ class Python(pyreq.BaseConanFile):
 
     def package_info(self):
         """Edit package info."""
+        super(Python, self).package_info()
         self.cpp_info.includedirs = ["include", "include/python3.7m"]
         self.cpp_info.libs.extend(["python3.7m", "pthread", "dl", "util"])
-        # python binaries will find their dependencies (zlib and bzip2 are already in LD_LIBRARY_PATHS)
-        self.env_info.LD_LIBRARY_PATH.append(os.path.join(self.package_folder, "lib"))
-        self.env_info.LD_LIBRARY_PATH.extend(self.deps_cpp_info["OpenSSL"].lib_paths)
-        self.env_info.LD_LIBRARY_PATH.extend(self.deps_cpp_info["expat"].lib_paths)
-        self.env_info.LD_LIBRARY_PATH.extend(self.deps_cpp_info["lzma"].lib_paths)
-        self.env_info.LD_LIBRARY_PATH.extend(self.deps_cpp_info["libuuid"].lib_paths)
-        self.env_info.LD_LIBRARY_PATH.extend(self.deps_cpp_info["libffi"].lib_paths)
-        # python binaries are in PATH
-        self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))
-        # python binaries knows the installation directory
+        # python binaries know the installation directory
         self.env_info.PYTHONHOME = self.package_folder
+
+# Python build finished successfully!
+# The necessary bits to build these optional modules were not found:
+# _tkinter
+# To find the necessary bits, look in setup.py in detect_modules() for the module's name.
+
+
+# The following modules found by detect_modules() in setup.py, have been
+# built by the Makefile instead, as configured by the Setup files:
+# _abc                  atexit                pwd
+# time

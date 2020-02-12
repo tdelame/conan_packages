@@ -60,6 +60,7 @@ class embree(pyreq.CMakeConanFile):
 
     def package_info(self):
         """Edit package info."""
+        super(embree, self).package_info()
         self.cpp_info.libs = ["embree3"]
         self.cpp_info.includedirs = ["include", "kernels"]
         self.cpp_info.defines.append("TASKING_TBB")

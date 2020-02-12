@@ -34,9 +34,10 @@ class openEXR(pyreq.CMakeConanFile):
         }
 
         self.add_default_definitions(definition_dict)
-        return definition_dict        
+        return definition_dict       
 
     def package_info(self):
         """Edit package info."""
+        super(openEXR, self).package_info()
         self.cpp_info.libs = ["Half", "Iex", "IexMath", "IlmImf", "IlmImfUtil", "IlmThread", "Imath"]
         self.cpp_info.includedirs = ["include", "include/OpenEXR"]

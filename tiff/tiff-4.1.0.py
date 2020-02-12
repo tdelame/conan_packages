@@ -28,4 +28,5 @@ class tiff(pyreq.BaseConanFile):
 
     def package_info(self):
         """Edit package info."""
+        super(tiff, self).package_info()
         self.cpp_info.libs = ["tiff", "tiffxx"]

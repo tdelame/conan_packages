@@ -4,7 +4,7 @@ import shutil
 import os
 
 from conans import ConanFile, tools, AutoToolsBuildEnvironment, Meson
-from utils import remove
+from utils import remove, executable_in_directory, library_in_directory
 
 class BaseConanFile(ConanFile):
 
@@ -13,6 +13,9 @@ class BaseConanFile(ConanFile):
 
     options = {"shared": [True, False]}
     default_options = {"shared": True}
+
+    add_bin_to_path = True
+    add_lib_to_ld_path = True
 
     def download(self, urlbase, directory=None, compression=None):
         if compression is None:
@@ -38,7 +41,9 @@ class BaseConanFile(ConanFile):
                             remove(filename)
 
             remove(os.path.join(self.package_folder, "share", "doc"))
+            remove(os.path.join(self.package_folder, "share", "info"))
             remove(os.path.join(self.package_folder, "share", "man"))
+            remove(os.path.join(self.package_folder, "share", "locale"))
             remove(os.path.join(self.package_folder, "share", "gtk-doc"))
             remove(os.path.join(self.package_folder, "share", "cmake"))
             remove(os.path.join(self.package_folder, "lib", "cmake"))
@@ -90,9 +95,16 @@ class BaseConanFile(ConanFile):
                 meson.build()
                 meson.install()
 
-    def build_autotools(self, arguments=None, directory=None, parallel_make=True, parallel_install=True, include_paths=None):
+    def build_autotools(
+            self, arguments=None, directory=None,
+            make_arguments=None, parallel_make=True,
+            install_arguments=None, parallel_install=True,
+            include_paths=None):
         if not tools.os_info.is_linux:
             raise RuntimeError("build_autotools is meant to be called on Linux only")
+
+        if directory is None:
+            directory = self._source_subfolder
 
         if arguments is None:
             arguments = []
@@ -102,9 +114,14 @@ class BaseConanFile(ConanFile):
             arguments.extend(["--enable-static", "--disable-shared"])
 
         parallel = "-j{}".format(tools.cpu_count())
-
-        if directory is None:
-            directory = self._source_subfolder
+        if make_arguments is None:
+            make_arguments = []
+        if parallel_make:
+            make_arguments.append(parallel)
+        if install_arguments is None:
+            install_arguments = []
+        if parallel_install:
+            install_arguments.append(parallel)
 
         abs_source_subfolder = os.path.abspath(directory)
         with self.managed_load_library_paths():
@@ -121,8 +138,8 @@ class BaseConanFile(ConanFile):
                         autotools.include_paths += include_paths
 
                     autotools.configure(args=arguments)
-                    autotools.make(args=[parallel] if parallel_make else None)
-                    autotools.install(args=[parallel] if parallel_install else None)
+                    autotools.make(args=make_arguments)
+                    autotools.install(args=install_arguments)
 
     def package_licenses(self):
         """Include any license into the package."""
@@ -134,3 +151,16 @@ class BaseConanFile(ConanFile):
         """Assemble the package."""
         self.package_licenses()
         self.clean_package()
+
+    def package_info(self):
+        """Edit package info"""
+
+        if os.name != "nt":
+            bin_directory = os.path.join(self.package_folder, "bin")
+            lib_directory = os.path.join(self.package_folder, "lib")
+
+            if self.add_bin_to_path and executable_in_directory(bin_directory):
+                self.env_info.PATH.append(bin_directory)
+
+            if self.add_lib_to_ld_path and library_in_directory(lib_directory):
+                self.env_info.LD_LIBRARY_PATH.append(lib_directory)

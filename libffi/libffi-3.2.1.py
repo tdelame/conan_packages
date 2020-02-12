@@ -152,14 +152,12 @@ class Libffi(pyreq.BaseConanFile):
             # https://android.googlesource.com/platform/external/libffi/+/7748bd0e4a8f7d7c67b2867a3afdd92420e95a9f
             tools.replace_in_file(sysv_s_src, "stmeqia", "stmiaeq")
                 
-    def _get_auto_tools(self):
-        return AutoToolsBuildEnvironment(self, win_bash=tools.os_info.is_windows)
-
     def build(self):
-        arguments = [ "--disable-debug"]
+        arguments = ["--disable-debug"]
         self.build_autotools(arguments)
 
     def package_info(self):
+        super(Libffi, self).package_info()
         self.cpp_info.includedirs = [os.path.join("lib", "{}-{}".format(self.name, self.version), "include")]
         if not self.options.shared:
             self.cpp_info.defines += ["FFI_STATIC"]

@@ -1,8 +1,9 @@
-from conans import ConanFile, tools
-import shutil
+from conans import python_requires, tools
 import os
 
-class boost_chrono(ConanFile):
+pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
+
+class boost_chrono(pyreq.BaseConanFile):
     description = "Boost Chrono library"
     license = "Boost Software License - Version 1.0. http://www.boost.org/LICENSE_1_0.txt"
     url = "https://www.boost.org/"
@@ -10,10 +11,6 @@ class boost_chrono(ConanFile):
     name = "boost-chrono"
 
     settings = "os", "build_type"
-    options = {"shared": [True, False]}
-    default_options = {"shared": True}
-
-    _source_subfolder = "source_subfolder"
 
     def requirements(self):
         self.requires("boost-headers/1.70.0@tdelame/stable")
@@ -47,6 +44,7 @@ class boost_chrono(ConanFile):
 
     def package_info(self):
         """Edit package info."""
+        super(boost_chrono, self).package_info()
         self.cpp_info.libs = ["boost_chrono"]
         self.cpp_info.system_libs = ["m", "pthread"]
     

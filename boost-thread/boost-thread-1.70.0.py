@@ -1,8 +1,8 @@
-from conans import ConanFile, tools
-import shutil
+from conans import python_requires, tools
 import os
+pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
 
-class boost_thread(ConanFile):
+class boost_thread(pyreq.BaseConanFile):
     description = "Boost Thread library"
     license = "Boost Software License - Version 1.0. http://www.boost.org/LICENSE_1_0.txt"
     url = "https://www.boost.org/"
@@ -10,10 +10,6 @@ class boost_thread(ConanFile):
     name = "boost-thread"
 
     settings = "os", "build_type"
-    options = {"shared": [True, False]}
-    default_options = {"shared": True}
-
-    _source_subfolder = "source_subfolder"
 
     def requirements(self):
         self.requires("boost-headers/1.70.0@tdelame/stable")
@@ -47,6 +43,7 @@ class boost_thread(ConanFile):
 
     def package_info(self):
         """Edit package info."""
+        super(boost_thread, self).package_info()
         self.cpp_info.libs = ["boost_thread"]
         self.cpp_info.system_libs = ["m", "pthread"]
     

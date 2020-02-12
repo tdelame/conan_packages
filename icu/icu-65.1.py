@@ -37,4 +37,5 @@ class ICU(pyreq.BaseConanFile):
 
     def package_info(self):
         """Edit package info."""
+        super(ICU, self).package_info()
         self.cpp_info.libs = ["icui18n", "icuio", "icutest", "icutu", "icuuc", "icudata"]
