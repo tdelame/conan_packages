@@ -26,6 +26,18 @@ class CMake(ConanFile):
         tools.untargz(targz_file_name, self.name)
         os.remove(targz_file_name)
 
+        with tools.chdir(os.path.join(self.name, "cmake-3.15.4", "Modules")):
+            tools.replace_in_file(
+                "FindX11.cmake",
+                "set(X11_INC_SEARCH_PATH",
+                "set(X11_INC_SEARCH_PATH ${CONAN_X11_INC_SEARCH_PATH}")
+
+            tools.replace_in_file(
+                "FindX11.cmake",
+                "set(X11_LIB_SEARCH_PATH",
+                "set(X11_LIB_SEARCH_PATH ${CONAN_X11_LIB_SEARCH_PATH}")
+
+
     def build(self):
         """Build the elements to package."""
         autotools = AutoToolsBuildEnvironment(self)
