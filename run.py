@@ -289,6 +289,7 @@ def main():
 
     manager.manage("rumba-python-dev", "1.0")
     manager.manage("rumba-python", "1.0.0")
+    manager.manage("USD", "20.02") # rumba-python, boost-headers, boost-program-options, boost-python, TBB, OpenSubdiv, GLEW, OpenImageIO, OpenColorIO, ptex, alembic, OpenEXR, MaterialX, libXext, libX11, xproto, GLU
     manager.finish()
 
 if __name__ == "__main__":
