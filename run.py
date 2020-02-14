@@ -138,6 +138,7 @@ def main():
     manager.manage("sqlite3", "3.30.1")
     manager.manage("ncurses", "6.1")
     manager.manage("termcap", "1.3.1")
+    manager.manage("OpenColorIO", "1.1.1")
 
     manager.manage("boost-atomic", "1.70.0")           # boost-headers
     manager.manage("boost-filesystem", "1.70.0")       # boost-headers
