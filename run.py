@@ -224,6 +224,7 @@ def main():
     manager.manage("OpenSubdiv", "3.4.0")              # zlib, TBB, GLEW
     manager.manage("tiff", "4.1.0")                    # zlib, zstd, lzma, libjpeg
     manager.manage("OpenImageIO", "2.1.10.1")          # zlib, tiff, OpenEXR, libjpeg, libpng, boost-filesystem, boost-thread, TBB, bzip2, freetype
+    manager.manage("boost-python", "1.70.0")           # cpython, boost-headers
     manager.manage("meson", "0.53.0")                  # cpython
     manager.manage("libalsa", "1.2.1.2")               # cpython
     manager.manage("PortAudio", "2018-12-24")          # libalsa
