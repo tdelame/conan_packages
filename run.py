@@ -1,21 +1,45 @@
 #!/usr/bin/env python
 """Create or update conan packages."""
+import subprocess
 import argparse
 import logging
 import tempfile
 import sys
 import os
 
-from internals.utils import execute_command
+from internals.utils import execute_command, make_symlink
 from internals.manager import PackageManager
 
-def extract_settings(argument_list=None):
-    if argument_list is None:
-        argument_list = sys.argv[1 :]
+DOCKER_BASH_COMMAND = "python -u /inputdir/run.py {arguments}"
+DOCKER_COMMAND_LINE = (
+    'docker run --rm -t '           # launch docker with a TTY and delete the container once finished
+    '-v {root}:/inputdir '          # mount this directory onto /inputdir
+    '{additional} '                 # additional docker arguments
+    '{image_name_and_version} '     # use this name:version image
+    '/bin/bash -c "{bash_command}"' # run this command inside the docker container
+)
 
+def extract_settings(argument_list):
     parser = argparse.ArgumentParser(
         prog="Make Conan Packages",
         description="Create or update conan packages")
+
+    if os.name != "nt":
+        parser.add_argument(
+            "--portable", action="store_true",
+            help="execute command in a docker image to produce portable binaries on Linux")
+        
+        parser.add_argument(
+            "--docker-image", type=str, default="atom_base:3.3",
+            help="name and version of the docker image to use with --portable")
+
+        parser.add_argument(
+            "--share-conan", action="store_true",
+            help="share conan data directory with host when using --portable")
+
+        parser.add_argument(
+            "--conan-data-dir", type=str, default=None,
+            help=argparse.SUPPRESS)
 
     parser.add_argument(
         "--download", action="store_true",
@@ -71,6 +95,10 @@ def extract_settings(argument_list=None):
     setattr(settings, "linux", os.name != "nt")
     setattr(settings, "windows", not settings.linux)
 
+    if settings.windows:
+        setattr(settings, "portable", False)
+        setattr(settings, "conan_data_dir", None)
+
     return settings
 
 def update_repo(settings):
@@ -86,13 +114,44 @@ def update_repo(settings):
                 log_path)
 
 def main():
+    arguments_list = sys.argv[1 :]
+    settings = extract_settings(arguments_list)
+
+    if settings.portable:
+        arguments_list.remove("--portable")
+        additional_docker_arguments = ""
+
+        if settings.share_conan:
+            conan_cache = os.path.join(os.path.expanduser("~"), ".conan", "data")
+            arguments_list.remove("--share-conan")
+            arguments_list.extend(["--conan-data-dir", "/inputconandata"])
+            additional_docker_arguments = "-v {}:/inputconandata".format(conan_cache)
+
+        command_line = DOCKER_COMMAND_LINE.format(
+            root=settings.root,
+            image_name_and_version=settings.docker_image,
+            additional=additional_docker_arguments,
+            bash_command=DOCKER_BASH_COMMAND.format(arguments=" ".join(arguments_list)))
+
+        process = subprocess.Popen(command_line, shell=True)
+        sys.exit(process.wait())
+
+    if settings.conan_data_dir:
+        log_path = os.path.join(settings.tempdir, "conan_home.log")
+        success = execute_command("conan config home", log_path)
+        with open(log_path, "r") as infile:
+            content = infile.read()
+        if not success:
+            logging.error("conan config home: failed\n{}".format(content))
+            sys.exit(1)
+        make_symlink(settings.conan_data_dir, os.path.join(content.strip(), "data"))
+
     logging.basicConfig(
         format="%(asctime)s.%(msecs)03d | %(levelname)-8s | %(message)s",
         datefmt="%H:%M:%S",
         level=logging.DEBUG)
     logging.info("application started")
 
-    settings = extract_settings()
     update_repo(settings)
     if settings.no_sudo:
         os.environ["CONAN_SYSREQUIRES_SUDO"] = "False"
