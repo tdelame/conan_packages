@@ -54,6 +54,32 @@ def executable_in_directory(directory_path):
     return False
 
 
+def fix_shebangs_in_directory(directory_path, program_name):
+    if os.path.exists(directory_path):
+        with change_current_directory(directory_path):
+            for filename in [entry for entry in os.listdir(".") if os.path.isfile(entry)]:
+                try:
+                    with open(filename, "r") as infile:
+                        lines = infile.readlines()
+                    
+                    if len(lines[0]) > 2 and lines[0].startswith("#!"):
+                        lines[0] = "#!/usr/bin/env {}\n".format(program_name)
+                        with open(filename, "w") as outfile:
+                            outfile.writelines(lines)
+                except:
+                    pass
+
+def fix_shebang(file_path, program_name):
+    if os.path.exists(file_path):
+        with open(file_path, "r") as infile:
+            lines = infile.readlines()
+        
+        if len(lines[0]) > 2 and lines[0].startswith("#!"):
+            lines[0] = "#!/usr/bin/env {}\n".format(program_name)
+            with open(file_path, "w") as outfile:
+                outfile.writelines(lines)
+
+
 def library_in_directory(directory_path):
     if not os.path.exists(directory_path) or not os.path.isdir(directory_path):
         return False
