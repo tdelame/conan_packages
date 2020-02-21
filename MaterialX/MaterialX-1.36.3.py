@@ -65,4 +65,4 @@ class materialx(pyreq.CMakeConanFile):
         self.cpp_info.libs = [
             "MaterialXCore", "MaterialXFormat",
             "MaterialXGenGlsl", "MaterialXGenOsl", "MaterialXGenShader",
-            "MaterialXRender", "MaterialXRenderOsl", "MaterialXRenderHw", "MaterialXRrenderGlsl"]
+            "MaterialXRender", "MaterialXRenderOsl", "MaterialXRenderHw", "MaterialXRenderGlsl"]
