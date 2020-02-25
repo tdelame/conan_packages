@@ -174,7 +174,6 @@ def main():
 
     # libraries without any dependence
     manager.manage("GLU", "9.0.0")
-    manager.manage("IlmBase", "2.3.0")
     manager.manage("TBB", "2019-U6")
     manager.manage("doxygen", "1.8.17")
     manager.manage("gperf", "3.1")
@@ -214,7 +213,7 @@ def main():
     manager.manage("ptex", "2.3.2")                    # zlib
     manager.manage("freetype", "2.9.1")                # zlib, libpng, bzip2
     manager.manage("libcurl", "7.61.1")                # zlib, OpenSSL
-    manager.manage("alembic", "1.7.10")                # zlib, hdf5, IlmBase
+    manager.manage("alembic", "1.7.10")                # zlib, hdf5, OpenEXR
     manager.manage("fontconfig", "2.13.92")            # expat, freetype, gperf
     manager.manage("libxml2", "2.9.9")                 # icu, zlib, libiconv
     manager.manage("gettext", "0.20.1")                # libiconv, libxml2
