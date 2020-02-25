@@ -1,3 +1,4 @@
+import os
 from conans import python_requires
 
 pyreq = python_requires("pyreq/1.0.0@tdelame/stable")
@@ -29,6 +30,14 @@ class LibSndFile(pyreq.BaseConanFile):
             "--disable-external-libs"
         ]
         self.build_autotools(arguments)
+
+    def package(self):
+        """Assemble the package."""
+        super(LibSndFile, self).package()
+        if self.settings.os == "Linux" and self.options.shared:
+            # libsndfile.1.0 might be requested by libalsa on host systems.
+            with pyreq.change_current_directory(os.path.join(self.package_folder, "lib")):
+                os.symlink("libsndfile.so.1.0.28", "libsndfile.so.1.0")        
 
     def package_info(self):
         """Edit package info."""
