@@ -63,6 +63,10 @@ class USD(pyreq.CMakeConanFile):
             tools.replace_in_file("FindMaterialX.cmake", "documents/Libraries", """documents/Libraries
     libraries/stdlib""")
 
+        # FindTBB.cmake
+        with pyreq.change_current_directory(os.path.join(self._source_subfolder, "cmake", "modules")):
+            tools.replace_in_file("FindTBB.cmake", "foreach(_comp tbb_preview tbbmalloc tbb)", "foreach(_comp tbb)")
+
     def cmake_definitions(self):
         """Setup CMake definitions."""
         defs = {
