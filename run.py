@@ -28,7 +28,7 @@ def extract_settings(argument_list):
         parser.add_argument(
             "--portable", action="store_true",
             help="execute command in a docker image to produce portable binaries on Linux")
-        
+
         parser.add_argument(
             "--docker-image", type=str, default="atom_base:3.3",
             help="name and version of the docker image to use with --portable")
@@ -285,6 +285,7 @@ def main():
     manager.manage("MaterialX", "1.36.3")              # libXext, libXt, GLU, libX11, libSM, libICE
     manager.manage("qt", "5.14.0")                     # bison, flex, fontconfig, gperf, libalsa, libXext, libXi, libXrender, libX11, libxcb, libxkbcommon, libpng, libjpeg, zlib, openssl, cpython, freetype, expat, zstd, openal, icu
     manager.manage("pyside2", "5.14.0")                # cpython, qt
+    manager.manage("SDL2", "2.0.10")                   # libXext, libXrender, libX11,  libXcursor, libalsa, libXrandr, libXinerama, libxkbcommon
 
     manager.manage("rumba-python-dev", "1.0")
     manager.manage("rumba-python", "1.0.0")
